@@ -1,3 +1,3 @@
 module moonlightfight.com/elo-backend
 
-go 1.15
+go 1.16
