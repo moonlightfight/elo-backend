@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	c "./config"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	c "moonlightfight.com/elo-backend/config"
 )
 
 var client *mongo.Client
