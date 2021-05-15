@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
-	c "./config"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	c "moonlightfight.com/elo-backend/config"
 )
 
 var client *mongo.Client
@@ -58,8 +58,9 @@ func main() {
 	fmt.Println("Start writing code!")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@cluster0.ucnph.mongodb.net/%s?retryWrites=true&w=majority", configuration.Database.DBUser, configuration.Database.DBPass, configuration.Database.DBName))
-	client, _ := mongo.Connect(ctx, clientOptions)
+	port := fmt.Sprintf(":%d", configuration.Server.Port)
+	mongo.Connect(ctx, clientOptions)
 	router := mux.NewRouter()
 	router.HandleFunc("/admin", CreateAdminEndpoint).Methods("POST")
-	http.ListenAndServe(":6000", router)
+	http.ListenAndServe(port, router)
 }
