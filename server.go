@@ -58,8 +58,9 @@ func main() {
 	fmt.Println("Start writing code!")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@cluster0.ucnph.mongodb.net/%s?retryWrites=true&w=majority", configuration.Database.DBUser, configuration.Database.DBPass, configuration.Database.DBName))
+	port := fmt.Sprintf(":%d", configuration.Server.Port)
 	client, _ := mongo.Connect(ctx, clientOptions)
 	router := mux.NewRouter()
 	router.HandleFunc("/admin", CreateAdminEndpoint).Methods("POST")
-	http.ListenAndServe(":6000", router)
+	http.ListenAndServe(port, router)
 }
