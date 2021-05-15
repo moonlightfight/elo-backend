@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 	c "moonlightfight.com/elo-backend/config"
 )
 
@@ -28,10 +31,25 @@ func CreateAdminEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	var admin Admin
 	_ = json.NewDecoder(request.Body).Decode(&admin)
+	// encrypt user password
+	admin.password = HashPassword(admin.password)
 	collection := client.Database("").Collection("Admin")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	result, _ := collection.InsertOne(ctx, admin)
 	json.NewEncoder(response).Encode(result)
+}
+
+func HashPassword(password string) string {
+	var passwordBytes = []byte(password)
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.MinCost)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	var base64PasswordHash = base64.URLEncoding.EncodeToString(hashedPasswordBytes)
+
+	return base64PasswordHash
 }
 
 func main() {
