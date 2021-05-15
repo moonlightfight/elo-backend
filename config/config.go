@@ -6,7 +6,8 @@ type Configurations struct {
 }
 
 type ServerConfigurations struct {
-	Port int
+	Port   int
+	Secret string
 }
 
 type DatebaseConfigurations struct {
