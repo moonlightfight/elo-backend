@@ -31,7 +31,7 @@ type Admin struct {
 
 type LoginData struct {
 	email    string `json:"email" bson:"email"`
-	password string `"json:password" bson:"password"`
+	password string `json:"password" bson:"password"`
 }
 
 func CreateAdminEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -69,8 +69,10 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 	}
 	response.Header().Set("content-type", "application/json")
 	var loginData LoginData
+	// retrieve request args
 	_ = json.NewDecoder(request.Body).Decode(&loginData)
 	var user Admin
+	// retrieve user if exists
 	collection := client.Database("").Collection("Admin")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	dbErr := collection.FindOne(ctx, Admin{email: loginData.email}).Decode(&user)
@@ -79,12 +81,14 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
 		return
 	}
+	// check if passwords match with bcrypt
 	passwordsMatch := DoPasswordsMatch(user.password, loginData.password)
 	if !passwordsMatch {
 		response.WriteHeader(http.StatusNotAcceptable)
 		response.Write([]byte(`{ "message": "Invalid Password"}`))
 		return
 	}
+	// generate jwt
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
 		"username": user.username,
 		"email":    user.email,
@@ -97,6 +101,7 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 		io.WriteString(response, `{"error":"token_generation_failed"}`)
 		return
 	}
+	// format response data
 	type ResData struct {
 		ID    primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 		token string             `json:"token,omitempty" bson:"token,omitempty"`
@@ -107,6 +112,7 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 		token: tokenString,
 	}
 
+	// return data
 	json.NewEncoder(response).Encode(resData)
 }
 
