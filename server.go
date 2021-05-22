@@ -12,34 +12,23 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	c "github.com/moonlightfight/elo-backend/config"
+	m "github.com/moonlightfight/elo-backend/models"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
-	c "moonlightfight.com/elo-backend/config"
 )
 
 var client *mongo.Client
 
-type Admin struct {
-	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	email    string             `json:"email,omitempty" bson:"email,omitempty"`
-	username string             `json:"username,omitempty" bson:"username,omitempty"`
-	password string             `json:"password,omitempty" bson:"password,omitempty"`
-}
-
-type LoginData struct {
-	email    string `json:"email" bson:"email"`
-	password string `json:"password" bson:"password"`
-}
-
 func CreateAdminEndpoint(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
-	var admin Admin
+	var admin m.Admin
 	_ = json.NewDecoder(request.Body).Decode(&admin)
 	// encrypt user password
-	admin.password = HashPassword(admin.password)
+	admin.Password = HashPassword(admin.Password)
 	collection := client.Database("").Collection("Admin")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	result, _ := collection.InsertOne(ctx, admin)
@@ -68,21 +57,21 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
 	response.Header().Set("content-type", "application/json")
-	var loginData LoginData
+	var loginData m.LoginData
 	// retrieve request args
 	_ = json.NewDecoder(request.Body).Decode(&loginData)
-	var user Admin
+	var user m.Admin
 	// retrieve user if exists
 	collection := client.Database("").Collection("Admin")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	dbErr := collection.FindOne(ctx, Admin{email: loginData.email}).Decode(&user)
+	dbErr := collection.FindOne(ctx, m.Admin{Email: loginData.Email}).Decode(&user)
 	if dbErr != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
 		return
 	}
 	// check if passwords match with bcrypt
-	passwordsMatch := DoPasswordsMatch(user.password, loginData.password)
+	passwordsMatch := DoPasswordsMatch(user.Password, loginData.Password)
 	if !passwordsMatch {
 		response.WriteHeader(http.StatusNotAcceptable)
 		response.Write([]byte(`{ "message": "Invalid Password"}`))
@@ -90,8 +79,8 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 	}
 	// generate jwt
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"username": user.username,
-		"email":    user.email,
+		"username": user.Username,
+		"email":    user.Email,
 		"_id":      user.ID,
 		"iat":      time.Now().Unix(),
 	})
