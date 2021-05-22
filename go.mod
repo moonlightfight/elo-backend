@@ -1,4 +1,4 @@
-module moonlightfight.com/elo-backend
+module github.com/moonlightfight/elo-backend
 
 go 1.16
 
