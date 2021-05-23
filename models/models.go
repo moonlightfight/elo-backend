@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -47,7 +49,7 @@ type Tournament struct {
 	Location   string               `json:"location,omitempty" bson:"location,omitempty"`
 	BracketUrl string               `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`
 	NumPlayers int                  `json:"numPlayers,omitempty" bson:"numPlayers,omitempty"`
-	Date       string               `json:"date,omitempty" bson:"date,omitempty"`
+	Date       time.Time            `json:"date,omitempty" bson:"date,omitempty"`
 	Replay     string               `json:"replay,omitempty" bson:"replay,omitempty"`
 	Results    []TournamentResults  `json:"results,omitempty" bson:"results,omitempty"`
 	Matches    []primitive.ObjectID `json:"matches,omitempty" bson:"matches,omitempty"`
@@ -70,7 +72,7 @@ type Match struct {
 	ID                       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	WinningPlayer            primitive.ObjectID `json:"winningPlayer,omitempty" bson:"winningPlayer,omitempty"`
 	LosingPlayer             primitive.ObjectID `json:"losingPlayer,omitempty" bson:"losingPlayer,omitempty"`
-	Date                     string             `json:"date,omitempty" bson:"date,omitempty"`
+	Date                     time.Time          `json:"date,omitempty" bson:"date,omitempty"`
 	WinningPlayerStartingElo int                `json:"winningPlayerStartingElo,omitempty" bson:"winningPlayerStartingElo,omitempty"`
 	WinningPlayerEndingElo   int                `json:"winningPlayerEndingElo,omitempty" bson:"winningPlayerEndingElo,omitempty"`
 	LosingPlayerStartingElo  int                `json:"losingPlayerStartingElo,omitempty" bson:"losingPlayerStartingElo,omitempty"`
