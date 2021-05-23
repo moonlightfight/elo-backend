@@ -39,16 +39,27 @@ type Tournament struct {
 }
 
 type Character struct {
-	ID             primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
-	Slug           string               `json:"slug,omitempty" bson:"slug,omitempty"`
-	Name           string               `json:"name,omitempty" bson:"name,omitempty"`
-	CharactersUsed []primitive.ObjectID `json:"charactersUsed,omitempty" bson:"charactersUsed,omitempty"`
+	ID   primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug string             `json:"slug,omitempty" bson:"slug,omitempty"`
+	Name string             `json:"name,omitempty" bson:"name,omitempty"`
 }
 
 type TournamentResults struct {
-	Place  int                `json:"place,omitempty" bson:"place,omitempty"`
-	Points int                `json:"points,omitempty" bson:"points,omitempty"`
-	Player primitive.ObjectID `json:"player,omitempty" bson:"player,omitempty"`
+	Place          int                  `json:"place,omitempty" bson:"place,omitempty"`
+	Points         int                  `json:"points,omitempty" bson:"points,omitempty"`
+	Player         primitive.ObjectID   `json:"player,omitempty" bson:"player,omitempty"`
+	CharactersUsed []primitive.ObjectID `json:"charactersUsed,omitempty" bson:"charactersUsed,omitempty"`
+}
+
+type Match struct {
+	ID                       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	WinningPlayer            primitive.ObjectID `json:"winningPlayer,omitempty" bson:"winningPlayer,omitempty"`
+	LosingPlayer             primitive.ObjectID `json:"losingPlayer,omitempty" bson:"losingPlayer,omitempty"`
+	Date                     string             `json:"date,omitempty" bson:"date,omitempty"`
+	WinningPlayerStartingElo int                `json:"winningPlayerStartingElo,omitempty" bson:"winningPlayerStartingElo,omitempty"`
+	WinningPlayerEndingElo   int                `json:"winningPlayerEndingElo,omitempty" bson:"winningPlayerEndingElo,omitempty"`
+	LosingPlayerStartingElo  int                `json:"losingPlayerStartingElo,omitempty" bson:"losingPlayerStartingElo,omitempty"`
+	LosingPlayerEndingElo    int                `json:"losingPlayerEndingElo,omitempty" bson:"losingPlayerEndingElo,omitempty"`
 }
 
 type LoginData struct {
