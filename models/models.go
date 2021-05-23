@@ -28,14 +28,15 @@ type Player struct {
 }
 
 type Tournament struct {
-	ID         primitive.ObjectID  `json:"_id,omitempty" bson:"_id,omitempty"`
-	Slug       string              `json:"slug,omitempty" bson:"slug,omitempty"`
-	Location   string              `json:"location,omitempty" bson:"location,omitempty"`
-	BracketUrl string              `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`
-	NumPlayers int                 `json:"numPlayers,omitempty" bson:"numPlayers,omitempty"`
-	Date       string              `json:"date,omitempty" bson:"date,omitempty"`
-	Replay     string              `json:"replay,omitempty" bson:"replay,omitempty"`
-	Results    []TournamentResults `json:"results,omitempty" bson:"results,omitempty"`
+	ID         primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug       string               `json:"slug,omitempty" bson:"slug,omitempty"`
+	Location   string               `json:"location,omitempty" bson:"location,omitempty"`
+	BracketUrl string               `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`
+	NumPlayers int                  `json:"numPlayers,omitempty" bson:"numPlayers,omitempty"`
+	Date       string               `json:"date,omitempty" bson:"date,omitempty"`
+	Replay     string               `json:"replay,omitempty" bson:"replay,omitempty"`
+	Results    []TournamentResults  `json:"results,omitempty" bson:"results,omitempty"`
+	Matches    []primitive.ObjectID `json:"matches,omitempty" bson:"matches,omitempty"`
 }
 
 type Character struct {
