@@ -36,6 +36,12 @@ type Tournament struct {
 	Results    []TournamentResults `json:"results,omitempty" bson:"results,omitempty"`
 }
 
+type Character struct {
+	ID   primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug string             `json:"slug,omitempty" bson:"slug,omitempty"`
+	Name string             `json:"name,omitempty" bson:"name,omitempty"`
+}
+
 type TournamentResults struct {
 	Place  int                `json:"place,omitempty" bson:"place,omitempty"`
 	Points int                `json:"points,omitempty" bson:"points,omitempty"`
