@@ -29,6 +29,17 @@ type Player struct {
 	SubCharacters []primitive.ObjectID `json:"subCharacters,omitempty" bson:"subCharacters,omitempty"`
 }
 
+type Team struct {
+	ID           primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug         string               `json:"slug,omitempty" bson:"slug,omitempty"`
+	Name         string               `json:"name,omitempty" bson:"name,omitempty"`
+	Abbreviation string               `json:"abbreviation,omitempty" bson:"abbreviation,omitempty"`
+	Members      []primitive.ObjectID `json:"members,omitempty" bson:"members,omitempty"`
+	Logo         string               `json:"logo,omitempty" bson:"logo,omitempty"`
+	Twitter      string               `json:"twitter,omitempty" bson:"twitter,omitempty"`
+	Website      string               `json:"website,omitempty" bson:"website,omitempty"`
+}
+
 type Tournament struct {
 	ID         primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
 	Slug       string               `json:"slug,omitempty" bson:"slug,omitempty"`
