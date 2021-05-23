@@ -23,6 +23,7 @@ type Player struct {
 	Twitter       string               `json:"twitter,omitempty" bson:"twitter,omitempty"`
 	Twitch        string               `json:"twitch,omitempty" bson:"twitch,omitempty"`
 	Picture       string               `json:"picture,omitempty" bson:"picture,omitempty"`
+	Team          primitive.ObjectID   `json:"team,omitempty" bson:"team,omitempty"`
 	Tournaments   []primitive.ObjectID `json:"tournaments,omitempty" bson:"tournaments,omitempty"`
 	Matches       []primitive.ObjectID `json:"matches,omitempty" bson:"matches,omitempty"`
 	MainCharacter primitive.ObjectID   `json:"mainCharacter,omitempty" bson:"mainCharacter,omitempty"`
