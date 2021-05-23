@@ -12,17 +12,19 @@ type Admin struct {
 }
 
 type Player struct {
-	ID          primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
-	Slug        string               `json:"slug,omitempty" bson:"slug,omitempty"`
-	Username    string               `json:"username,omitempty" bson:"username,omitempty"`
-	Country     string               `json:"country,omitempty" bson:"country,omitempty"`
-	Ranking     int32                `json:"ranking,omitempty" bson:"ranking,omitempty"`
-	Points      int32                `json:"points,omitempty" bson:"points,omitempty"`
-	Controller  string               `json:"controller,omitempty" bson:"controller,omitempty"`
-	RealName    string               `json:"realName,omitempty" bson:"realName,omitempty"`
-	Twitter     string               `json:"twitter,omitempty" bson:"twitter,omitempty"`
-	Twitch      string               `json:"twitch,omitempty" bson:"twitch,omitempty"`
-	Tournaments []primitive.ObjectID `json:"tournaments,omitempty" bson:"tournaments,omitempty"`
+	ID            primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug          string               `json:"slug,omitempty" bson:"slug,omitempty"`
+	Username      string               `json:"username,omitempty" bson:"username,omitempty"`
+	Country       string               `json:"country,omitempty" bson:"country,omitempty"`
+	Ranking       int32                `json:"ranking,omitempty" bson:"ranking,omitempty"`
+	Points        int32                `json:"points,omitempty" bson:"points,omitempty"`
+	Controller    string               `json:"controller,omitempty" bson:"controller,omitempty"`
+	RealName      string               `json:"realName,omitempty" bson:"realName,omitempty"`
+	Twitter       string               `json:"twitter,omitempty" bson:"twitter,omitempty"`
+	Twitch        string               `json:"twitch,omitempty" bson:"twitch,omitempty"`
+	Tournaments   []primitive.ObjectID `json:"tournaments,omitempty" bson:"tournaments,omitempty"`
+	MainCharacter primitive.ObjectID   `json:"mainCharacter,omitempty" bson:"mainCharacter,omitempty"`
+	SubCharacters []primitive.ObjectID `json:"subCharacters,omitempty" bson:"subCharacters,omitempty"`
 }
 
 type Tournament struct {
