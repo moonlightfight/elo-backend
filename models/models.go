@@ -51,6 +51,17 @@ type TournamentResults struct {
 	Player primitive.ObjectID `json:"player,omitempty" bson:"player,omitempty"`
 }
 
+type Match struct {
+	ID                       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	WinningPlayer            primitive.ObjectID `json:"winningPlayer,omitempty" bson:"winningPlayer,omitempty"`
+	LosingPlayer             primitive.ObjectID `json:"losingPlayer,omitempty" bson:"losingPlayer,omitempty"`
+	Date                     string             `json:"date,omitempty" bson:"date,omitempty"`
+	WinningPlayerStartingElo int                `json:"winningPlayerStartingElo,omitempty" bson:"winningPlayerStartingElo,omitempty"`
+	WinningPlayerEndingElo   int                `json:"winningPlayerEndingElo,omitempty" bson:"winningPlayerEndingElo,omitempty"`
+	LosingPlayerStartingElo  int                `json:"losingPlayerStartingElo,omitempty" bson:"losingPlayerStartingElo,omitempty"`
+	LosingPlayerEndingElo    int                `json:"losingPlayerEndingElo,omitempty" bson:"losingPlayerEndingElo,omitempty"`
+}
+
 type LoginData struct {
 	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
