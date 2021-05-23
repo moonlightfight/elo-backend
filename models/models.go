@@ -20,8 +20,25 @@ type Player struct {
 	Points     int32              `json:"points,omitempty" bson:"points,omitempty"`
 	Controller string             `json:"controller,omitempty" bson:"controller,omitempty"`
 	RealName   string             `json:"realName,omitempty" bson:"realName,omitempty"`
-	Twitter    string             `json:"twitter,omitempty" bson:"twitter,omitempty`
+	Twitter    string             `json:"twitter,omitempty" bson:"twitter,omitempty"`
 	Twitch     string             `json:"twitch,omitempty" bson:"twitch,omitempty"`
+}
+
+type Tournament struct {
+	ID         primitive.ObjectID  `json:"_id,omitempty" bson:"_id,omitempty"`
+	Slug       string              `json:"slug,omitempty" bson:"slug,omitempty"`
+	Location   string              `json:"location,omitempty" bson:"location,omitempty"`
+	BracketUrl string              `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`
+	NumPlayers int                 `json:"numPlayers,omitempty" bson:"numPlayers,omitempty"`
+	Date       string              `json:"date,omitempty" bson:"date,omitempty"`
+	Replay     string              `json:"replay,omitempty" bson:"replay,omitempty"`
+	Results    []TournamentResults `json:"results,omitempty" bson:"results,omitempty"`
+}
+
+type TournamentResults struct {
+	Place  int                `json:"place,omitempty" bson:"place,omitempty"`
+	Points int                `json:"points,omitempty" bson:"points,omitempty"`
+	Player primitive.ObjectID `json:"player,omitempty" bson:"player,omitempty"`
 }
 
 type LoginData struct {
