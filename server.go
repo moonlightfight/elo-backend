@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/mux"
 	c "github.com/moonlightfight/elo-backend/config"
-	a "github.com/moonlightfight/elo-backend/routes/admin"
-	to "github.com/moonlightfight/elo-backend/routes/tournament"
+	"github.com/moonlightfight/elo-backend/routes/admin"
+	"github.com/moonlightfight/elo-backend/routes/tournament"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -44,8 +44,8 @@ func main() {
 	port := fmt.Sprintf(":%d", configuration.Server.Port)
 	mongo.Connect(ctx, clientOptions)
 	router := mux.NewRouter()
-	router.HandleFunc("/api/admin", a.CreateAdminEndpoint).Methods("POST")
-	router.HandleFunc("/api/admin/login", a.AdminLoginEndpoint).Methods("POST")
-	router.HandleFunc("/api/tournament/getfromweb", to.GetTournamentData).Methods("GET")
+	router.HandleFunc("/api/admin", admin.CreateAdminEndpoint).Methods("POST")
+	router.HandleFunc("/api/admin/login", admin.AdminLoginEndpoint).Methods("POST")
+	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Methods("GET")
 	http.ListenAndServe(port, router)
 }
