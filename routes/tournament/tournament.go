@@ -74,7 +74,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 			tournamentId = strings.Replace(url, "https://challonge.com/", "", -1)
 		} else {
 			trunc := strings.Replace(url, "https://", "", 1)
-			subDomain = strings.TrimRight(trunc, "challonge.com")
+			subDomain = strings.TrimRight(trunc, ".challonge.com")
 			tournamentId = strings.TrimLeft(url, fmt.Sprintf("https://%s.challonge.com/", subDomain))
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
