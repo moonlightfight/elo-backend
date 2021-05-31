@@ -174,3 +174,5 @@ type ChallongeBracket struct {
 		GroupStagesWereStarted bool        `json:"group_stages_were_started"`
 	} `json:"tournament"`
 }
+
+type BracketInfo struct{}
