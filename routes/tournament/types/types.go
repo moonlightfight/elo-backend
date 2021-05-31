@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 type ChallongeBracket struct {
 	Tournament struct {
@@ -175,4 +177,26 @@ type ChallongeBracket struct {
 	} `json:"tournament"`
 }
 
-type BracketInfo struct{}
+type BracketInfo struct {
+	Title          string    `json:"title"`
+	NumPlayers     int       `json:"numPlayers"`
+	TournamentDate time.Time `json:"tournamentDate"`
+	Players        []struct {
+		Player struct {
+			ID    int    `json:"id"`
+			Name  string `json:"name"`
+			Place int    `json:"place"`
+		}
+	} `json:"players"`
+	Matches []struct {
+		Match struct {
+			WinnerID    int       `json:"winnerId"`
+			LoserID     int       `json:"loserId"`
+			WinnerName  string    `json:"winnerName"`
+			LoserName   string    `json:"loserName"`
+			WinnerScore int       `json:"winnerScore"`
+			LoserScore  int       `json:"loserScore"`
+			MatchDate   time.Time `json:"matchTime"`
+		}
+	} `json:"matches"`
+}
