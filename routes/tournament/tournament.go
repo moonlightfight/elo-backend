@@ -7,10 +7,11 @@ import (
 
 	"github.com/gorilla/mux"
 	c "github.com/moonlightfight/elo-backend/config"
+	"github.com/moonlightfight/elo-backend/routes/tournament/types"
 	"github.com/spf13/viper"
 )
 
-func getChallongeBracket(url, apiKey string) {
+func getChallongeBracket(url, apiKey string) types.ChallongeBracket {
 	fmt.Println("test")
 }
 
@@ -40,9 +41,10 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
 	url, _ := params["url"]
+
 	// check the bracket url, if it is valid, send it to the proper function for retrieval and formatting, else, throw an error
 	if strings.Contains(url, "challonge") {
-		getChallongeBracket(url, configuration.ApiKeys.Challonge)
+		bracket := getChallongeBracket(url, configuration.ApiKeys.Challonge)
 	} else if strings.Contains(url, "smash") {
 		getSmashBracket(url, configuration.ApiKeys.Smash)
 	}
