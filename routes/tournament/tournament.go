@@ -17,6 +17,8 @@ import (
 func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey string) types.BracketInfo {
 	var apiUrl string
 	var bracketInfo types.BracketInfo
+	var matches []types.Match
+	var players []types.Player
 	if subDomain == nil {
 		apiUrl = fmt.Sprintf("https://api.challonge.com/v1/tournaments/%s.json?api_key=%s&include_participants=1&include_matches=1", tournamentId, apiKey)
 	} else {
@@ -36,7 +38,21 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 	json.Unmarshal(bodyBytes, challongeBracket)
 }
 
-func getSmashBracket(url, apiKey string) {}
+func getSmashBracket(slug, apiKey string) types.BracketInfo {
+	var bracketInfo types.BracketInfo
+	var matches []types.Match
+	var players []types.Player
+	apiUrl := "https://api.smash.gg/gql/alpha"
+	var query types.SmashQuery
+	var variables types.SmashVariables
+	variables = types.SmashVariables{
+		Slug: slug,
+	}
+	query = types.SmashQuery{
+		Query:     "query EventQuery($slug: String!) { event(slug: $slug) { id name standings(query: {page: 1, perPage: 500}) { nodes { id placement entrant { id name } } } sets { nodes { id slots { entrant { id name } } winnerId displayScore } } videogame { id name } tournament { id name } } }",
+		Variables: variables,
+	}
+}
 
 func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	// Set the file name of the configurations file
@@ -79,6 +95,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
 	} else if strings.Contains(url, "smash") {
-		getSmashBracket(url, configuration.ApiKeys.Smash)
+		slug := strings.Replace(url, "https://smash.gg/", "", -1)
+		getSmashBracket(slug, configuration.ApiKeys.Smash)
 	}
 }

@@ -200,3 +200,12 @@ type Player struct {
 	Name  string `json:"name"`
 	Place int    `json:"place"`
 }
+
+type SmashQuery struct {
+	Query     string         `json:"query"`
+	Variables SmashVariables `json:"variables"`
+}
+
+type SmashVariables struct {
+	Slug string `json:"slug"`
+}
