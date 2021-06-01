@@ -1,12 +1,14 @@
 package tournament
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	c "github.com/moonlightfight/elo-backend/config"
@@ -39,11 +41,14 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 }
 
 func getSmashBracket(slug, apiKey string) types.BracketInfo {
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
 	var bracketInfo types.BracketInfo
 	var matches []types.Match
 	var players []types.Player
 	apiUrl := "https://api.smash.gg/gql/alpha"
-	header := fmt.Sprintf("Authorization: Bearer %s", apiKey)
+	authHeader := fmt.Sprintf("Bearer %s", apiKey)
 	var query types.SmashQuery
 	var variables types.SmashVariables
 	variables = types.SmashVariables{
@@ -53,6 +58,21 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 		Query:     "query EventQuery($slug: String!) { event(slug: $slug) { id name standings(query: {page: 1, perPage: 500}) { nodes { id placement entrant { id name } } } sets { nodes { id slots { entrant { id name } } winnerId displayScore } } videogame { id name } tournament { id name } } }",
 		Variables: variables,
 	}
+	jsonBody, _ := json.Marshal(query)
+	req, err := http.NewRequest("POST", apiUrl, bytes.NewReader(jsonBody))
+	if err != nil {
+		panic("error formatting json!")
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", authHeader)
+	resp, err := client.Do(req)
+	if err != nil {
+		panic("POST error")
+	}
+	defer resp.Body.Close()
+	var smashBracket types.SmashBracket
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(bodyBytes, smashBracket)
 }
 
 func GetTournamentData(response http.ResponseWriter, request *http.Request) {
