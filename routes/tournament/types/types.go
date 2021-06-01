@@ -209,3 +209,55 @@ type SmashQuery struct {
 type SmashVariables struct {
 	Slug string `json:"slug"`
 }
+
+type SmashBracket struct {
+	Data struct {
+		Event struct {
+			ID        int    `json:"id"`
+			Name      string `json:"name"`
+			Standings struct {
+				Nodes []struct {
+					ID        int `json:"id"`
+					Placement int `json:"placement"`
+					Entrant   struct {
+						ID   int    `json:"id"`
+						Name string `json:"name"`
+					} `json:"entrant"`
+				} `json:"nodes"`
+			} `json:"standings"`
+			Sets struct {
+				Nodes []struct {
+					ID    int `json:"id"`
+					Slots []struct {
+						Entrant struct {
+							ID   int    `json:"id"`
+							Name string `json:"name"`
+						} `json:"entrant"`
+					} `json:"slots"`
+					Winnerid     int    `json:"winnerId"`
+					Displayscore string `json:"displayScore"`
+				} `json:"nodes"`
+			} `json:"sets"`
+			Videogame struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"videogame"`
+			Tournament struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			} `json:"tournament"`
+		} `json:"event"`
+	} `json:"data"`
+	Extensions struct {
+		Cachecontrol struct {
+			Version int `json:"version"`
+			Hints   []struct {
+				Path   []string `json:"path"`
+				Maxage int      `json:"maxAge"`
+				Scope  string   `json:"scope"`
+			} `json:"hints"`
+		} `json:"cacheControl"`
+		Querycomplexity int `json:"queryComplexity"`
+	} `json:"extensions"`
+	Actionrecords []interface{} `json:"actionRecords"`
+}

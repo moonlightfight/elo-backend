@@ -43,6 +43,7 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	var matches []types.Match
 	var players []types.Player
 	apiUrl := "https://api.smash.gg/gql/alpha"
+	header := fmt.Sprintf("Authorization: Bearer %s", apiKey)
 	var query types.SmashQuery
 	var variables types.SmashVariables
 	variables = types.SmashVariables{
