@@ -18,19 +18,24 @@ import (
 
 func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey string) types.BracketInfo {
 	var apiUrl string
+	/// define the structs in order to morph the data into universal data
 	var bracketInfo types.BracketInfo
 	var matches []types.Match
 	var players []types.Player
 	if subDomain == nil {
+		// if there's no subdomain, we only need to pack the tournament ID and api key into the query params
 		apiUrl = fmt.Sprintf("https://api.challonge.com/v1/tournaments/%s.json?api_key=%s&include_participants=1&include_matches=1", tournamentId, apiKey)
 	} else {
+		// if there's a subdomain, we need to concatenate the subdomain with the tournament ID and also include the api key
 		apiUrl = fmt.Sprintf("https://api.challonge.com/v1/tournaments/%s-%s.json?api_key=%s&include_participants=1&include_matches=1", subDomain, tournamentId, apiKey)
 	}
+	// run the api request
 	resp, err := http.Get(apiUrl)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	// unpack the json and unload it into the bracket struct
 	defer resp.Body.Close()
 
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
@@ -41,14 +46,19 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 }
 
 func getSmashBracket(slug, apiKey string) types.BracketInfo {
+	// set an http client since we need to pack request headers
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
+	// define the structs in order to morph the data into universal data
 	var bracketInfo types.BracketInfo
 	var matches []types.Match
 	var players []types.Player
+	// set the endpoint
 	apiUrl := "https://api.smash.gg/gql/alpha"
+	// generate the authorization header value
 	authHeader := fmt.Sprintf("Bearer %s", apiKey)
+	// create the GQL query and variables to pass
 	var query types.SmashQuery
 	var variables types.SmashVariables
 	variables = types.SmashVariables{
@@ -58,17 +68,22 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 		Query:     "query EventQuery($slug: String!) { event(slug: $slug) { id name standings(query: {page: 1, perPage: 500}) { nodes { id placement entrant { id name } } } sets { nodes { id slots { entrant { id name } } winnerId displayScore } } videogame { id name } tournament { id name } } }",
 		Variables: variables,
 	}
+	// create the json
 	jsonBody, _ := json.Marshal(query)
+	// generate the api request (POST is recommended on GraphQL queries/mutations from REST)
 	req, err := http.NewRequest("POST", apiUrl, bytes.NewReader(jsonBody))
 	if err != nil {
 		panic("error formatting json!")
 	}
+	// set the headers on the api request
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", authHeader)
+	// execute the API request
 	resp, err := client.Do(req)
 	if err != nil {
 		panic("POST error")
 	}
+	// read the json data and unpack it into the bracket struct
 	defer resp.Body.Close()
 	var smashBracket types.SmashBracket
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
