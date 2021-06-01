@@ -131,7 +131,8 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
 	} else if strings.Contains(url, "smash") {
-		slug := strings.Replace(url, "https://smash.gg/", "", -1)
+		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
+		slug := re.Replace(url)
 		getSmashBracket(slug, configuration.ApiKeys.Smash)
 	} else {
 		panic("unsupported bracket URL")
