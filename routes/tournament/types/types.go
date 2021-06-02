@@ -215,6 +215,7 @@ type SmashBracket struct {
 		Event struct {
 			ID        int    `json:"id"`
 			Name      string `json:"name"`
+			StartAt   int64  `json:"startAt"`
 			Standings struct {
 				Nodes []struct {
 					ID        int `json:"id"`

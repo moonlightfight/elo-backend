@@ -53,6 +53,20 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 		}
 		players = append(players, player)
 	}
+
+	// generate the match info
+
+	// generate the full bracket info
+	bracketInfo = types.BracketInfo{
+		Title:          challongeBracket.Tournament.Name,
+		NumPlayers:     challongeBracket.Tournament.ParticipantsCount,
+		TournamentDate: challongeBracket.Tournament.StartedAt,
+		Players:        players,
+		Matches:        matches,
+	}
+
+	// return the data to the API endpoint
+	return bracketInfo
 }
 
 func getSmashBracket(slug, apiKey string) types.BracketInfo {
@@ -75,7 +89,7 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 		Slug: slug,
 	}
 	query = types.SmashQuery{
-		Query:     "query EventQuery($slug: String!) { event(slug: $slug) { id name standings(query: {page: 1, perPage: 500}) { nodes { id placement entrant { id name } } } sets { nodes { id slots { entrant { id name } } winnerId displayScore } } videogame { id name } tournament { id name } } }",
+		Query:     "query EventQuery($slug: String!) { event(slug: $slug) { id name startAt standings(query: {page: 1, perPage: 500}) { nodes { id placement entrant { id name } } } sets { nodes { id slots { entrant { id name } } winnerId displayScore } } videogame { id name } tournament { id name } } }",
 		Variables: variables,
 	}
 	// create the json
@@ -110,6 +124,18 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	}
 
 	// generate the match info
+
+	// generate the fully formatted bracket
+	bracketInfo = types.BracketInfo{
+		Title:          smashBracket.Data.Event.Tournament.Name,
+		NumPlayers:     len(smashBracket.Data.Event.Standings.Nodes),
+		TournamentDate: time.Unix(smashBracket.Data.Event.StartAt, 0),
+		Players:        players,
+		Matches:        matches,
+	}
+
+	// return the bracket info to endpoint
+	return bracketInfo
 }
 
 func GetTournamentData(response http.ResponseWriter, request *http.Request) {
