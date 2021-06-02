@@ -43,6 +43,16 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 	var challongeBracket types.ChallongeBracket
 
 	json.Unmarshal(bodyBytes, challongeBracket)
+
+	// morph players into frontend format
+	for _, participant := range challongeBracket.Tournament.Participants {
+		player := types.Player{
+			ID:    participant.Participant.ID,
+			Name:  participant.Participant.DisplayName,
+			Place: participant.Participant.FinalRank,
+		}
+		players = append(players, player)
+	}
 }
 
 func getSmashBracket(slug, apiKey string) types.BracketInfo {
