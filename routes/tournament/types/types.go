@@ -237,6 +237,7 @@ type SmashBracket struct {
 					} `json:"slots"`
 					Winnerid     int    `json:"winnerId"`
 					Displayscore string `json:"displayScore"`
+					CompletedAt  int64  `json:"completedAt"`
 				} `json:"nodes"`
 			} `json:"sets"`
 			Videogame struct {
