@@ -84,8 +84,7 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	authHeader := fmt.Sprintf("Bearer %s", apiKey)
 	// create the GQL query and variables to pass
 	var query types.SmashQuery
-	var variables types.SmashVariables
-	variables = types.SmashVariables{
+	variables := types.SmashVariables{
 		Slug: slug,
 	}
 	query = types.SmashQuery{
@@ -161,7 +160,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	}
 	response.Header().Set("content-type", "application/json")
 	params := mux.Vars(request)
-	url, _ := params["url"]
+	url := params["url"]
 
 	var bracket types.BracketInfo
 
@@ -186,4 +185,6 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	} else {
 		panic("unsupported bracket URL")
 	}
+
+	json.NewEncoder(response).Encode(bracket)
 }
