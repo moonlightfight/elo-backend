@@ -88,6 +88,18 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	var smashBracket types.SmashBracket
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	json.Unmarshal(bodyBytes, smashBracket)
+
+	// generate the player info
+	for _, player := range smashBracket.Data.Event.Standings.Nodes {
+		insertedPlayer := types.Player{
+			ID:    player.Entrant.ID,
+			Name:  player.Entrant.Name,
+			Place: player.Placement,
+		}
+		players = append(players, insertedPlayer)
+	}
+
+	// generate the match info
 }
 
 func GetTournamentData(response http.ResponseWriter, request *http.Request) {
@@ -131,6 +143,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
 	} else if strings.Contains(url, "smash") {
+		// trim the url down to the obscenely long event slug that IDK what Smash.gg was thinking when they created it
 		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
 		slug := re.Replace(url)
 		getSmashBracket(slug, configuration.ApiKeys.Smash)
