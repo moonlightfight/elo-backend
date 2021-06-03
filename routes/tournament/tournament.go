@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -55,6 +56,43 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 	}
 
 	// generate the match info
+	for _, match := range challongeBracket.Tournament.Matches {
+		var winnerIndex int
+		var loserIndex int
+		for i, player := range players {
+			if player.ID == match.Match.WinnerID {
+				winnerIndex = i
+				break
+			}
+		}
+		for i, player := range players {
+			if player.ID == match.Match.LoserID {
+				loserIndex = i
+				break
+			}
+		}
+		player1Score, _ := strconv.Atoi(strings.TrimRight(match.Match.ScoresCsv, "-"))
+		player2Score, _ := strconv.Atoi(strings.TrimLeft(match.Match.ScoresCsv, "-"))
+		var winnerScore int
+		var loserScore int
+		if player1Score > player2Score {
+			winnerScore = player1Score
+			loserScore = player2Score
+		} else {
+			winnerScore = player2Score
+			loserScore = player1Score
+		}
+		set := types.Match{
+			WinnerID:    match.Match.WinnerID,
+			LoserID:     match.Match.LoserID,
+			WinnerName:  players[winnerIndex].Name,
+			LoserName:   players[loserIndex].Name,
+			WinnerScore: winnerScore,
+			LoserScore:  loserScore,
+			MatchDate:   match.Match.StartedAt,
+		}
+		matches = append(matches, set)
+	}
 
 	// generate the full bracket info
 	bracketInfo = types.BracketInfo{
