@@ -161,6 +161,42 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	}
 
 	// generate the match info
+	for _, set := range smashBracket.Data.Event.Sets.Nodes {
+		setPlayers := strings.Split(set.Displayscore, " - ")
+		leftPlayerScore, _ := strconv.Atoi(strings.TrimLeft(setPlayers[0], " "))
+		rightPlayerScore, _ := strconv.Atoi(strings.TrimLeft(setPlayers[1], " "))
+		var winnerScore int
+		var loserScore int
+		var winnerName string
+		var loserName string
+		var winnerId int
+		var loserId int
+		if leftPlayerScore > rightPlayerScore {
+			winnerScore = leftPlayerScore
+			loserScore = rightPlayerScore
+			winnerName = set.Slots[0].Entrant.Name
+			loserName = set.Slots[1].Entrant.Name
+			winnerId = set.Slots[0].Entrant.ID
+			loserId = set.Slots[1].Entrant.ID
+		} else {
+			winnerScore = rightPlayerScore
+			loserScore = leftPlayerScore
+			winnerName = set.Slots[1].Entrant.Name
+			loserName = set.Slots[0].Entrant.Name
+			winnerId = set.Slots[1].Entrant.ID
+			loserId = set.Slots[0].Entrant.ID
+		}
+		match := types.Match{
+			WinnerID:    winnerId,
+			LoserID:     loserId,
+			WinnerName:  winnerName,
+			LoserName:   loserName,
+			WinnerScore: winnerScore,
+			LoserScore:  loserScore,
+			MatchDate:   time.Unix(set.CompletedAt, 0),
+		}
+		matches = append(matches, match)
+	}
 
 	// generate the fully formatted bracket
 	bracketInfo = types.BracketInfo{
