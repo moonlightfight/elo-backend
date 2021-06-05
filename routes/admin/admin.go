@@ -12,14 +12,12 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	c "github.com/moonlightfight/elo-backend/config"
+	"github.com/moonlightfight/elo-backend/database"
 	m "github.com/moonlightfight/elo-backend/models"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var client *mongo.Client
 
 func DoPasswordsMatch(hashedPassword, inputPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
@@ -40,18 +38,36 @@ func HashPassword(password string) string {
 }
 
 func CreateAdminEndpoint(response http.ResponseWriter, request *http.Request) {
+	client, err := database.ConfigDB()
+	if err != nil {
+		log.Println(err)
+	}
 	response.Header().Set("content-type", "application/json")
 	var admin m.Admin
-	_ = json.NewDecoder(request.Body).Decode(&admin)
+	jsonErr := json.NewDecoder(request.Body).Decode(&admin)
+	if jsonErr != nil {
+		log.Println(err)
+	}
 	// encrypt user password
 	admin.Password = HashPassword(admin.Password)
-	collection := client.Database("").Collection("Admin")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result, _ := collection.InsertOne(ctx, admin)
+	collection := client.Database("test").Collection("Admin")
+	ctx, ctxErr := context.WithTimeout(context.Background(), 5*time.Second)
+
+	if ctxErr != nil {
+		log.Println(ctxErr)
+	}
+	result, resErr := collection.InsertOne(ctx, admin)
+	if resErr != nil {
+		log.Println(resErr)
+	}
 	json.NewEncoder(response).Encode(result)
 }
 
 func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
+	client, err := database.ConfigDB()
+	if err != nil {
+		log.Println(err)
+	}
 	// Set the file name of the configurations file
 	viper.SetConfigName("config")
 
@@ -68,8 +84,8 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 		fmt.Printf("Error reading config file, %s", err)
 	}
 
-	err := viper.Unmarshal(&configuration)
-	if err != nil {
+	viperErr := viper.Unmarshal(&configuration)
+	if viperErr != nil {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
 	response.Header().Set("content-type", "application/json")

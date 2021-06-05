@@ -50,6 +50,7 @@ type Tournament struct {
 	BracketUrl string               `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`
 	NumPlayers int                  `json:"numPlayers,omitempty" bson:"numPlayers,omitempty"`
 	Date       time.Time            `json:"date,omitempty" bson:"date,omitempty"`
+	DateAdded  time.Time            `json:"dateAdded,omitempty" bson:"dateAdded,omitempty"`
 	Replay     string               `json:"replay,omitempty" bson:"replay,omitempty"`
 	Results    []TournamentResults  `json:"results,omitempty" bson:"results,omitempty"`
 	Matches    []primitive.ObjectID `json:"matches,omitempty" bson:"matches,omitempty"`
