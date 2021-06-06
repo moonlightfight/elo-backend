@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,7 +20,8 @@ import (
 
 func DoPasswordsMatch(hashedPassword, inputPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
-	return err != nil
+
+	return err == nil
 }
 
 func HashPassword(password string) string {
@@ -32,9 +32,7 @@ func HashPassword(password string) string {
 		log.Println(err)
 	}
 
-	var base64PasswordHash = base64.URLEncoding.EncodeToString(hashedPasswordBytes)
-
-	return base64PasswordHash
+	return string(hashedPasswordBytes)
 }
 
 func CreateAdminEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -72,7 +70,7 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 	viper.SetConfigName("config")
 
 	// Set the path to look for the configurations file
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("../..")
 
 	// Enable VIPER to read Environment Variables
 	viper.AutomaticEnv()
@@ -94,29 +92,30 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 	_ = json.NewDecoder(request.Body).Decode(&loginData)
 	var user m.Admin
 	// retrieve user if exists
-	collection := client.Database("").Collection("Admin")
+	collection := client.Database("test").Collection("Admin")
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	dbErr := collection.FindOne(ctx, m.Admin{Email: loginData.Email}).Decode(&user)
 	if dbErr != nil {
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		response.Write([]byte(`{ "message": "` + dbErr.Error() + `" }`))
 		return
 	}
 	// check if passwords match with bcrypt
 	passwordsMatch := DoPasswordsMatch(user.Password, loginData.Password)
+	tokenSecret := []byte(configuration.Server.Secret)
 	if !passwordsMatch {
 		response.WriteHeader(http.StatusNotAcceptable)
 		response.Write([]byte(`{ "message": "Invalid Password"}`))
 		return
 	}
 	// generate jwt
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"username": user.Username,
-		"email":    user.Email,
-		"_id":      user.ID,
-		"iat":      time.Now().Unix(),
-	})
-	tokenString, tokenErr := token.SignedString([]byte(configuration.Server.Secret))
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["username"] = user.Username
+	claims["email"] = user.Email
+	claims["_id"] = user.ID
+	claims["iat"] = time.Now().Unix()
+	tokenString, tokenErr := token.SignedString(tokenSecret)
 	if tokenErr != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(response, `{"error":"token_generation_failed"}`)
@@ -125,12 +124,12 @@ func AdminLoginEndpoint(response http.ResponseWriter, request *http.Request) {
 	// format response data
 	type ResData struct {
 		ID    primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-		token string             `json:"token,omitempty" bson:"token,omitempty"`
+		Token string             `json:"token,omitempty" bson:"token,omitempty"`
 	}
 
 	resData := ResData{
 		ID:    user.ID,
-		token: tokenString,
+		Token: tokenString,
 	}
 
 	// return data
