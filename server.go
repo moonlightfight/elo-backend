@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	c "github.com/moonlightfight/elo-backend/config"
 	"github.com/moonlightfight/elo-backend/routes/admin"
+	"github.com/moonlightfight/elo-backend/routes/character"
 	"github.com/moonlightfight/elo-backend/routes/tournament"
 	"github.com/spf13/viper"
 )
@@ -37,6 +38,7 @@ func main() {
 	router.HandleFunc("/api/admin", admin.CreateAdminEndpoint).Methods("POST")
 	router.HandleFunc("/api/admin/login", admin.AdminLoginEndpoint).Methods("POST")
 	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Methods("GET")
+	router.HandleFunc("/api/character", character.CreateCharacterEndpoint).Methods("POST")
 	fmt.Printf("server listening on http://localhost%v", port)
 	http.ListenAndServe(port, router)
 }
