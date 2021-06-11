@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	c "github.com/moonlightfight/elo-backend/config"
 	"github.com/moonlightfight/elo-backend/routes/tournament/types"
 	"github.com/spf13/viper"
@@ -233,8 +232,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		fmt.Printf("Unable to decode into struct, %v", err)
 	}
 	response.Header().Set("content-type", "application/json")
-	params := mux.Vars(request)
-	url := params["url"]
+	url := request.FormValue("url")
 
 	var bracket types.BracketInfo
 
@@ -251,13 +249,14 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 			tournamentId = strings.TrimLeft(url, fmt.Sprintf("https://%s.challonge.com/", subDomain))
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
+		fmt.Println(bracket)
 	} else if strings.Contains(url, "smash") {
 		// trim the url down to the obscenely long event slug that IDK what Smash.gg was thinking when they created it
 		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
 		slug := re.Replace(url)
-		getSmashBracket(slug, configuration.ApiKeys.Smash)
+		bracket = getSmashBracket(slug, configuration.ApiKeys.Smash)
 	} else {
-		panic("unsupported bracket URL")
+		fmt.Println("unsupported bracket URL")
 	}
 
 	// send the returned bracket to the frontend

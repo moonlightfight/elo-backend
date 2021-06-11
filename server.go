@@ -35,10 +35,19 @@ func main() {
 	}
 	port := fmt.Sprintf(":%d", configuration.Server.Port)
 	router := mux.NewRouter()
+
+	// Admin routes
 	router.HandleFunc("/api/admin", admin.CreateAdminEndpoint).Methods("POST")
 	router.HandleFunc("/api/admin/login", admin.AdminLoginEndpoint).Methods("POST")
-	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Methods("GET")
+
+	// Tournament routes
+	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Queries("url", "{url}").Methods("GET")
+
+	// Character routes
 	router.HandleFunc("/api/character", character.CreateCharacterEndpoint).Methods("POST")
+	router.HandleFunc("/api/character", character.GetCharactersEndpoint).Methods("GET")
+
+	// run the server
 	fmt.Printf("server listening on http://localhost%v", port)
 	http.ListenAndServe(port, router)
 }
