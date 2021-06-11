@@ -29,6 +29,7 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 		// if there's a subdomain, we need to concatenate the subdomain with the tournament ID and also include the api key
 		apiUrl = fmt.Sprintf("https://api.challonge.com/v1/tournaments/%s-%s.json?api_key=%s&include_participants=1&include_matches=1", subDomain, tournamentId, apiKey)
 	}
+	fmt.Println(apiUrl)
 	// run the api request
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -38,11 +39,14 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 	// unpack the json and unload it into the bracket struct
 	defer resp.Body.Close()
 
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	var challongeBracket types.ChallongeBracket
 
-	json.Unmarshal(bodyBytes, challongeBracket)
+	json.Unmarshal(bodyBytes, &challongeBracket)
 
 	// morph players into frontend format
 	for _, participant := range challongeBracket.Tournament.Participants {
@@ -249,7 +253,6 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 			tournamentId = strings.TrimLeft(url, fmt.Sprintf("https://%s.challonge.com/", subDomain))
 		}
 		bracket = getChallongeBracket(tournamentId, subDomain, configuration.ApiKeys.Challonge)
-		fmt.Println(bracket)
 	} else if strings.Contains(url, "smash") {
 		// trim the url down to the obscenely long event slug that IDK what Smash.gg was thinking when they created it
 		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
