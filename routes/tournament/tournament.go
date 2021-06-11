@@ -29,7 +29,7 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 		// if there's a subdomain, we need to concatenate the subdomain with the tournament ID and also include the api key
 		apiUrl = fmt.Sprintf("https://api.challonge.com/v1/tournaments/%s-%s.json?api_key=%s&include_participants=1&include_matches=1", subDomain, tournamentId, apiKey)
 	}
-	fmt.Println(apiUrl)
+
 	// run the api request
 	resp, err := http.Get(apiUrl)
 	if err != nil {
@@ -151,7 +151,7 @@ func getSmashBracket(slug, apiKey string) types.BracketInfo {
 	defer resp.Body.Close()
 	var smashBracket types.SmashBracket
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(bodyBytes, smashBracket)
+	json.Unmarshal(bodyBytes, &smashBracket)
 
 	// generate the player info
 	for _, player := range smashBracket.Data.Event.Standings.Nodes {
