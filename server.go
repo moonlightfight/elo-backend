@@ -42,6 +42,7 @@ func main() {
 
 	// Tournament routes
 	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Queries("url", "{url}").Methods("GET")
+	router.HandleFunc("/api/tournaments", tournament.CreateTournament).Methods("POST")
 
 	// Character routes
 	router.HandleFunc("/api/character", character.CreateCharacterEndpoint).Methods("POST")
