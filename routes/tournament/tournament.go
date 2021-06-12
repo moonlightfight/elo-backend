@@ -265,3 +265,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	// send the returned bracket to the frontend
 	json.NewEncoder(response).Encode(bracket)
 }
+
+func CreateTournament(response http.ResponseWriter, request *http.Request) {
+
+}
