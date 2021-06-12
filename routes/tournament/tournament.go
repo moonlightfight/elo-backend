@@ -267,5 +267,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 }
 
 func CreateTournament(response http.ResponseWriter, request *http.Request) {
-
+	var returnedData types.ReturnedData
+	response.Header().Set("content-type", "application/json")
+	json.NewDecoder(request.Body).Decode(&returnedData)
 }
