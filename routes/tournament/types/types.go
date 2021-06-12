@@ -195,6 +195,15 @@ type Match struct {
 	MatchDate   time.Time `json:"matchTime"`
 }
 
+type ReturnedData struct {
+	Token      string `json:"token"`
+	Tournament struct {
+		*BracketInfo
+		Replay   string `json:"replay"`
+		Location string `json:"location"`
+	} `json:"tournament"`
+}
+
 type Player struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
