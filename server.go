@@ -49,6 +49,6 @@ func main() {
 	router.HandleFunc("/api/character", character.GetCharactersEndpoint).Methods("GET")
 
 	// run the server
-	fmt.Printf("server listening on http://localhost%v", port)
+	fmt.Printf("server listening on http://localhost%v\n", port)
 	http.ListenAndServe(port, router)
 }

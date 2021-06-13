@@ -186,13 +186,13 @@ type BracketInfo struct {
 }
 
 type Match struct {
-	WinnerID    int       `json:"winnerId"`
-	LoserID     int       `json:"loserId"`
-	WinnerName  string    `json:"winnerName"`
-	LoserName   string    `json:"loserName"`
-	WinnerScore int       `json:"winnerScore"`
-	LoserScore  int       `json:"loserScore"`
-	MatchDate   time.Time `json:"matchTime"`
+	WinnerID    interface{} `json:"winnerId"`
+	LoserID     interface{} `json:"loserId"`
+	WinnerName  string      `json:"winnerName"`
+	LoserName   string      `json:"loserName"`
+	WinnerScore int         `json:"winnerScore"`
+	LoserScore  int         `json:"loserScore"`
+	MatchDate   time.Time   `json:"matchTime"`
 }
 
 type ReturnedData struct {
@@ -205,9 +205,9 @@ type ReturnedData struct {
 }
 
 type Player struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Place int    `json:"place"`
+	ID    interface{} `json:"id"`
+	Name  string      `json:"name"`
+	Place int         `json:"place"`
 }
 
 type SmashQuery struct {
