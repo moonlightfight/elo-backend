@@ -17,7 +17,7 @@ func CreateCharacterEndpoint(response http.ResponseWriter, request *http.Request
 	if err != nil {
 		fmt.Println(err)
 	}
-	var newCharacter models.Admin
+	var newCharacter models.Character
 	response.Header().Set("content-type", "application/json")
 	_ = json.NewDecoder(request.Body).Decode(&newCharacter)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

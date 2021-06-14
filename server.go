@@ -8,6 +8,7 @@ import (
 	c "github.com/moonlightfight/elo-backend/config"
 	"github.com/moonlightfight/elo-backend/routes/admin"
 	"github.com/moonlightfight/elo-backend/routes/character"
+	"github.com/moonlightfight/elo-backend/routes/player"
 	"github.com/moonlightfight/elo-backend/routes/tournament"
 	"github.com/spf13/viper"
 )
@@ -42,11 +43,14 @@ func main() {
 
 	// Tournament routes
 	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Queries("url", "{url}").Methods("GET")
-	router.HandleFunc("/api/tournaments", tournament.CreateTournament).Methods("POST")
+	router.HandleFunc("/api/tournament", tournament.CreateTournament).Methods("POST")
 
 	// Character routes
 	router.HandleFunc("/api/character", character.CreateCharacterEndpoint).Methods("POST")
 	router.HandleFunc("/api/character", character.GetCharactersEndpoint).Methods("GET")
+
+	// Player routes
+	router.HandleFunc("/api/player", player.CreatePlayerEndpoint).Methods("GET")
 
 	// run the server
 	fmt.Printf("server listening on http://localhost%v\n", port)
