@@ -3,6 +3,7 @@ package player
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -69,5 +71,30 @@ func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetPlayersEndPoint(response http.ResponseWriter, request *http.Request) {
-
+	response.Header().Set("content-type", "application/json")
+	var players []models.Player
+	client, err := database.ConfigDB()
+	if err != nil {
+		fmt.Println(err)
+	}
+	collection := client.Database("test").Collection("Player")
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		return
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var player models.Player
+		cursor.Decode(&player)
+		players = append(players, player)
+	}
+	if err := cursor.Err(); err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		return
+	}
+	json.NewEncoder(response).Encode(players)
 }
