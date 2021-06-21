@@ -91,10 +91,19 @@ func GetPlayersEndPoint(response http.ResponseWriter, request *http.Request) {
 		cursor.Decode(&player)
 		players = append(players, player)
 	}
+	if len(players) == 0 {
+		players = []models.Player{}
+	}
+	type ReturnData struct {
+		Players []models.Player `json:"players"`
+	}
+	returnData := ReturnData{
+		Players: players,
+	}
 	if err := cursor.Err(); err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(`{ "message": "` + err.Error() + `" }`))
 		return
 	}
-	json.NewEncoder(response).Encode(players)
+	json.NewEncoder(response).Encode(returnData)
 }
