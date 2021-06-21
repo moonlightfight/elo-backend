@@ -36,15 +36,17 @@ func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
 
 	lowerName := strings.ToLower(data.Name)
 
-	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s])`)
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
 
 	if err != nil {
 		log.Println(err)
 	}
 
+	re := strings.NewReplacer("_", "-", " ", "-")
+
 	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
 
-	slug := strings.Replace(noSpecialChar, " ", "-", -1)
+	slug := re.Replace(noSpecialChar)
 
 	player := models.Player{
 		Username: data.Name,
