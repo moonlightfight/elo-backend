@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -35,7 +36,15 @@ func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
 
 	lowerName := strings.ToLower(data.Name)
 
-	slug := strings.Replace(lowerName, " ", "-", -1)
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s])`)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
+
+	slug := strings.Replace(noSpecialChar, " ", "-", -1)
 
 	player := models.Player{
 		Username: data.Name,
