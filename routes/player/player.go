@@ -50,8 +50,6 @@ func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
 
 	player := models.Player{
 		Username: data.Name,
-		Country:  "",
-		Points:   0,
 		Ranking:  1200,
 		Slug:     slug,
 	}
