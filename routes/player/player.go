@@ -12,7 +12,6 @@ import (
 	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -39,19 +38,11 @@ func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
 	slug := strings.Replace(lowerName, " ", "-", -1)
 
 	player := models.Player{
-		Username:      data.Name,
-		Country:       "",
-		Points:        0,
-		Ranking:       1200,
-		Slug:          slug,
-		RealName:      "",
-		Controller:    "",
-		Twitter:       "",
-		Twitch:        "",
-		Picture:       "",
-		Tournaments:   []primitive.ObjectID{},
-		Matches:       []primitive.ObjectID{},
-		SubCharacters: []primitive.ObjectID{},
+		Username: data.Name,
+		Country:  "",
+		Points:   0,
+		Ranking:  1200,
+		Slug:     slug,
 	}
 
 	collection := client.Database("test").Collection("Player")
