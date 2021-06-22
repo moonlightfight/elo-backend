@@ -287,12 +287,27 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	for _, player := range returnedData.Tournament.Players {
 		var plyr models.Player
 		playerColl.FindOne(ctx, models.Player{ID: player.ID}).Decode(&plyr)
+		// add tournament points to each player model.
 		plyr.Points += helpers.CalculateTournamentPoints(returnedData.Tournament.NumPlayers, player.Place)
 		players = append(players, plyr)
 	}
-	// map out tournament points by number of entries per player
-	// add tournament points to each player model.
 	// map through matches and do elo calculations
+	for _, match := range returnedData.Tournament.Matches {
+		var winnerIndex int
+		var loserIndex int
+		for i, player := range players {
+			if match.WinnerID == player.ID {
+				winnerIndex = i
+				break
+			}
+		}
+		for i, player := range players {
+			if match.LoserID == player.ID {
+				loserIndex = i
+				break
+			}
+		}
+	}
 	// create match on database
 	// link match to players on their model
 	// link match to tournament on its model
