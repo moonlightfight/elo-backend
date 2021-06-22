@@ -2,6 +2,7 @@ package tournament
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,8 @@ import (
 	"time"
 
 	c "github.com/moonlightfight/elo-backend/config"
+	"github.com/moonlightfight/elo-backend/database"
+	"github.com/moonlightfight/elo-backend/models"
 	"github.com/moonlightfight/elo-backend/routes/tournament/types"
 	"github.com/spf13/viper"
 )
@@ -267,7 +270,32 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 }
 
 func CreateTournament(response http.ResponseWriter, request *http.Request) {
+	client, err := database.ConfigDB()
+	if err != nil {
+		log.Println(err)
+	}
+	playerColl := client.Database("test").Collection("Player")
+	tournamentColl := client.Database("test").Collection("Tournament")
+	matchColl := client.Database("test").Collection("Match")
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	var returnedData types.ReturnedData
 	response.Header().Set("content-type", "application/json")
 	json.NewDecoder(request.Body).Decode(&returnedData)
+	// get each player by their ID
+	players := []models.Player{}
+	for _, player := range returnedData.Tournament.Players {
+		var plyr models.Player
+		playerColl.FindOne(ctx, models.Player{ID: player.ID}).Decode(&plyr)
+		players = append(players, plyr)
+	}
+	// map out tournament points by number of entries per player
+	// add tournament points to each player model.
+	// map through matches and do elo calculations
+	// create match on database
+	// link match to players on their model
+	// link match to tournament on its model
+	// create tournament on database
+	// link tournament to players on their model
+	// update players in database
+	// return tournament ID to frontend
 }

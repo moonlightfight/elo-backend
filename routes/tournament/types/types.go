@@ -2,6 +2,8 @@ package types
 
 import (
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ChallongeBracket struct {
@@ -205,9 +207,9 @@ type ReturnedData struct {
 }
 
 type Player struct {
-	ID    interface{} `json:"id"`
-	Name  string      `json:"name"`
-	Place int         `json:"place"`
+	ID    primitive.ObjectID `json:"id"`
+	Name  string             `json:"name"`
+	Place int                `json:"place"`
 }
 
 type SmashQuery struct {
