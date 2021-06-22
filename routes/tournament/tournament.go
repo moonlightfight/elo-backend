@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,7 @@ import (
 	"github.com/moonlightfight/elo-backend/routes/tournament/helpers"
 	"github.com/moonlightfight/elo-backend/routes/tournament/types"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey string) types.BracketInfo {
@@ -283,13 +285,45 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("content-type", "application/json")
 	json.NewDecoder(request.Body).Decode(&returnedData)
 	// get each player by their ID
+	lowerName := strings.ToLower(returnedData.Tournament.Title)
+
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	re := strings.NewReplacer("_", "-", " ", "-")
+
+	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
+
+	slug := re.Replace(noSpecialChar)
+
+	tournament := models.Tournament{
+		Name:       returnedData.Tournament.Title,
+		Slug:       slug,
+		Location:   returnedData.Tournament.Location,
+		BracketUrl: returnedData.Tournament.BracketUrl,
+		NumPlayers: returnedData.Tournament.NumPlayers,
+		Replay:     returnedData.Tournament.Replay,
+		Date:       returnedData.Tournament.TournamentDate,
+		DateAdded:  time.Now(),
+	}
 	players := []models.Player{}
 	for _, player := range returnedData.Tournament.Players {
 		var plyr models.Player
 		playerColl.FindOne(ctx, models.Player{ID: player.ID}).Decode(&plyr)
 		// add tournament points to each player model.
-		plyr.Points += helpers.CalculateTournamentPoints(returnedData.Tournament.NumPlayers, player.Place)
+		points := helpers.CalculateTournamentPoints(returnedData.Tournament.NumPlayers, player.Place)
+		plyr.Points += points
+		result := models.TournamentResults{
+			Place:          player.Place,
+			Points:         points,
+			Player:         player.ID,
+			CharactersUsed: player.CharactersUsed,
+		}
 		players = append(players, plyr)
+		tournament.Results = append(tournament.Results, result)
 	}
 	// map through matches and do elo calculations
 	for _, match := range returnedData.Tournament.Matches {
@@ -307,12 +341,46 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 				break
 			}
 		}
+		winnerStartingElo := players[winnerIndex].Ranking
+		loserStartingElo := players[loserIndex].Ranking
+		winnerEndingElo, loserEndingElo := helpers.CalculateElo(winnerStartingElo, loserStartingElo)
+		players[winnerIndex].Ranking = winnerEndingElo
+		players[loserIndex].Ranking = loserEndingElo
+		// create match on database
+		dbMatch := models.Match{
+			WinningPlayer:            match.WinnerID,
+			LosingPlayer:             match.LoserID,
+			WinningPlayerStartingElo: winnerStartingElo,
+			WinningPlayerEndingElo:   winnerEndingElo,
+			LosingPlayerStartingElo:  loserStartingElo,
+			LosingPlayerEndingElo:    loserEndingElo,
+			Date:                     match.MatchDate,
+		}
+		res, err := matchColl.InsertOne(ctx, dbMatch)
+		if err != nil {
+			log.Println(err)
+		}
+		idToString := fmt.Sprintf("%v", res.InsertedID)
+		id, _ := primitive.ObjectIDFromHex(idToString)
+		// link match to players on their model
+		players[winnerIndex].Matches = append(players[winnerIndex].Matches, id)
+		players[loserIndex].Matches = append(players[loserIndex].Matches, id)
+		// link match to tournament on its model
+		tournament.Matches = append(tournament.Matches, id)
 	}
-	// create match on database
-	// link match to players on their model
-	// link match to tournament on its model
 	// create tournament on database
+	res, err := tournamentColl.InsertOne(ctx, tournament)
+	if err != nil {
+		log.Println(err)
+	}
+	tournIdString := fmt.Sprintf("%v", res.InsertedID)
+	tournId, _ := primitive.ObjectIDFromHex(tournIdString)
 	// link tournament to players on their model
-	// update players in database
+	for _, player := range players {
+		player.Tournaments = append(player.Tournaments, tournId)
+		// update players in database
+		playerColl.UpdateOne(ctx, models.Player{ID: player.ID}, player)
+	}
 	// return tournament ID to frontend
+	json.NewEncoder(response).Encode(res)
 }

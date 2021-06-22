@@ -45,6 +45,7 @@ type Team struct {
 
 type Tournament struct {
 	ID         primitive.ObjectID   `json:"_id,omitempty" bson:"_id,omitempty"`
+	Name       string               `json:"name,omitempty" bson:"name,omitempty"`
 	Slug       string               `json:"slug,omitempty" bson:"slug,omitempty"`
 	Location   string               `json:"location,omitempty" bson:"location,omitempty"`
 	BracketUrl string               `json:"bracketUrl,omitempty" bson:"bracketUrl,omitempty"`

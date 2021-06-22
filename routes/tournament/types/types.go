@@ -188,28 +188,42 @@ type BracketInfo struct {
 }
 
 type Match struct {
-	WinnerID    interface{} `json:"winnerId"`
-	LoserID     interface{} `json:"loserId"`
-	WinnerName  string      `json:"winnerName"`
-	LoserName   string      `json:"loserName"`
-	WinnerScore int         `json:"winnerScore"`
-	LoserScore  int         `json:"loserScore"`
-	MatchDate   time.Time   `json:"matchTime"`
+	WinnerID    int       `json:"winnerId"`
+	LoserID     int       `json:"loserId"`
+	WinnerName  string    `json:"winnerName"`
+	LoserName   string    `json:"loserName"`
+	WinnerScore int       `json:"winnerScore"`
+	LoserScore  int       `json:"loserScore"`
+	MatchDate   time.Time `json:"matchTime"`
 }
 
 type ReturnedData struct {
 	Token      string `json:"token"`
 	Tournament struct {
-		*BracketInfo
-		Replay   string `json:"replay"`
-		Location string `json:"location"`
+		Matches []struct {
+			*Match
+			WinnerID primitive.ObjectID `json:"winnerId"`
+			LoserID  primitive.ObjectID `json:"loserId"`
+		} `json:"matches"`
+		Players []struct {
+			ID             primitive.ObjectID   `json:"id"`
+			Name           string               `json:"name"`
+			Place          int                  `json:"place"`
+			CharactersUsed []primitive.ObjectID `json:"charactersUsed,omitempty"`
+		} `json:"players"`
+		Title          string    `json:"title"`
+		NumPlayers     int       `json:"numPlayers"`
+		TournamentDate time.Time `json:"tournamentDate"`
+		Replay         string    `json:"replay"`
+		Location       string    `json:"location"`
+		BracketUrl     string    `json:"bracketUrl"`
 	} `json:"tournament"`
 }
 
 type Player struct {
-	ID    primitive.ObjectID `json:"id"`
-	Name  string             `json:"name"`
-	Place int                `json:"place"`
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Place int    `json:"place"`
 }
 
 type SmashQuery struct {
