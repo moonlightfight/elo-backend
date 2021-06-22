@@ -15,6 +15,7 @@ import (
 	c "github.com/moonlightfight/elo-backend/config"
 	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/models"
+	"github.com/moonlightfight/elo-backend/routes/tournament/helpers"
 	"github.com/moonlightfight/elo-backend/routes/tournament/types"
 	"github.com/spf13/viper"
 )
@@ -286,6 +287,7 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	for _, player := range returnedData.Tournament.Players {
 		var plyr models.Player
 		playerColl.FindOne(ctx, models.Player{ID: player.ID}).Decode(&plyr)
+		plyr.Points += helpers.CalculateTournamentPoints(returnedData.Tournament.NumPlayers, player.Place)
 		players = append(players, plyr)
 	}
 	// map out tournament points by number of entries per player
