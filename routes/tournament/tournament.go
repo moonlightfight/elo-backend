@@ -47,7 +47,7 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	var challongeBracket types.ChallongeBracket
@@ -234,12 +234,12 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	var configuration c.Configurations
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
+		log.Printf("Error reading config file, %s", err)
 	}
 
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		fmt.Printf("Unable to decode into struct, %v", err)
+		log.Printf("Unable to decode into struct, %v", err)
 	}
 	response.Header().Set("content-type", "application/json")
 	url := request.FormValue("url")
