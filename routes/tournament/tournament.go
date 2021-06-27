@@ -265,7 +265,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		slug := re.Replace(url)
 		bracket = getSmashBracket(slug, configuration.ApiKeys.Smash)
 	} else {
-		fmt.Println("unsupported bracket URL")
+		log.Println("unsupported bracket URL")
 	}
 
 	// send the returned bracket to the frontend
