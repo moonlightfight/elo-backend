@@ -280,7 +280,10 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	playerColl := client.Database("test").Collection("Player")
 	tournamentColl := client.Database("test").Collection("Tournament")
 	matchColl := client.Database("test").Collection("Match")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	if cancel != nil {
+		log.Println(cancel)
+	}
 	var returnedData types.ReturnedData
 	response.Header().Set("content-type", "application/json")
 	json.NewDecoder(request.Body).Decode(&returnedData)
