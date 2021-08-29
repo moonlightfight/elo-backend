@@ -47,7 +47,7 @@ func getChallongeBracket(tournamentId string, subDomain interface{}, apiKey stri
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	var challongeBracket types.ChallongeBracket
@@ -234,12 +234,12 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 	var configuration c.Configurations
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
+		log.Printf("Error reading config file, %s", err)
 	}
 
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		fmt.Printf("Unable to decode into struct, %v", err)
+		log.Printf("Unable to decode into struct, %v", err)
 	}
 	response.Header().Set("content-type", "application/json")
 	url := request.FormValue("url")
@@ -265,7 +265,7 @@ func GetTournamentData(response http.ResponseWriter, request *http.Request) {
 		slug := re.Replace(url)
 		bracket = getSmashBracket(slug, configuration.ApiKeys.Smash)
 	} else {
-		fmt.Println("unsupported bracket URL")
+		log.Println("unsupported bracket URL")
 	}
 
 	// send the returned bracket to the frontend
@@ -280,7 +280,10 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	playerColl := client.Database("test").Collection("Player")
 	tournamentColl := client.Database("test").Collection("Tournament")
 	matchColl := client.Database("test").Collection("Match")
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	if cancel != nil {
+		log.Println(cancel)
+	}
 	var returnedData types.ReturnedData
 	response.Header().Set("content-type", "application/json")
 	json.NewDecoder(request.Body).Decode(&returnedData)
