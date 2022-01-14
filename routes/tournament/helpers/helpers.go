@@ -1,492 +1,540 @@
 package helpers
 
-import "math"
+import (
+	"math"
+)
 
 func CalculateTournamentPoints(numPlayers, placing int) int {
-	if numPlayers < 5 {
-		if placing == 1 {
+	switch {
+	case numPlayers < 5:
+		switch placing {
+		case 1:
 			return 6
-		} else if placing == 2 {
+		case 2:
 			return 3
-		} else if placing == 3 {
+		case 3:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 4 && numPlayers < 7 {
-		if placing == 1 {
+	case numPlayers > 4 && numPlayers < 7:
+		switch placing {
+		case 1:
 			return 9
-		} else if placing == 2 {
+		case 2:
 			return 6
-		} else if placing == 3 {
+		case 3:
 			return 3
-		} else if placing == 4 {
+		case 4:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 6 && numPlayers < 9 {
-		if placing == 1 {
+	case numPlayers > 6 && numPlayers < 9:
+		switch placing {
+		case 1:
 			return 12
-		} else if placing == 2 {
+		case 2:
 			return 9
-		} else if placing == 3 {
+		case 3:
 			return 6
-		} else if placing == 4 {
+		case 4:
 			return 3
-		} else if placing == 5 {
+		case 5:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 8 && numPlayers < 13 {
-		if placing == 1 {
+	case numPlayers > 8 && numPlayers < 13:
+		switch placing {
+		case 1:
 			return 15
-		} else if placing == 2 {
+		case 2:
 			return 12
-		} else if placing == 3 {
+		case 3:
 			return 9
-		} else if placing == 4 {
+		case 4:
 			return 6
-		} else if placing == 5 {
+		case 5:
 			return 3
-		} else if placing == 7 {
+		case 7:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 12 && numPlayers < 17 {
-		if placing == 1 {
+	case numPlayers > 12 && numPlayers < 17:
+		switch placing {
+		case 1:
 			return 20
-		} else if placing == 2 {
+		case 2:
 			return 15
-		} else if placing == 3 {
+		case 3:
 			return 12
-		} else if placing == 4 {
+		case 4:
 			return 9
-		} else if placing == 5 {
+		case 5:
 			return 6
-		} else if placing == 7 {
+		case 7:
 			return 3
-		} else if placing == 9 {
+		case 9:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 16 && numPlayers < 25 {
-		if placing == 1 {
+	case numPlayers > 16 && numPlayers < 25:
+		switch placing {
+		case 1:
 			return 30
-		} else if placing == 2 {
+		case 2:
 			return 20
-		} else if placing == 3 {
+		case 3:
 			return 15
-		} else if placing == 4 {
+		case 4:
 			return 12
-		} else if placing == 5 {
+		case 5:
 			return 9
-		} else if placing == 7 {
+		case 7:
 			return 6
-		} else if placing == 9 {
+		case 9:
 			return 3
-		} else if placing == 13 {
+		case 13:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 24 && numPlayers < 33 {
-		if placing == 1 {
+	case numPlayers > 24 && numPlayers < 33:
+		switch placing {
+		case 1:
 			return 40
-		} else if placing == 2 {
+		case 2:
 			return 30
-		} else if placing == 3 {
+		case 3:
 			return 20
-		} else if placing == 4 {
+		case 4:
 			return 15
-		} else if placing == 5 {
+		case 5:
 			return 12
-		} else if placing == 7 {
+		case 7:
 			return 9
-		} else if placing == 9 {
+		case 9:
 			return 6
-		} else if placing == 13 {
+		case 13:
 			return 3
-		} else if placing == 17 {
+		case 17:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 32 && numPlayers < 49 {
-		if placing == 1 {
+	case numPlayers > 32 && numPlayers < 49:
+		switch placing {
+		case 1:
 			return 60
-		} else if placing == 2 {
+		case 2:
 			return 40
-		} else if placing == 3 {
+		case 3:
 			return 30
-		} else if placing == 4 {
+		case 4:
 			return 20
-		} else if placing == 5 {
+		case 5:
 			return 15
-		} else if placing == 7 {
+		case 7:
 			return 12
-		} else if placing == 9 {
+		case 9:
 			return 9
-		} else if placing == 13 {
+		case 13:
 			return 6
-		} else if placing == 17 {
+		case 17:
 			return 3
-		} else if placing == 25 {
+		case 25:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 48 && numPlayers < 65 {
-		if placing == 1 {
+	case numPlayers > 48 && numPlayers < 65:
+		switch placing {
+		case 1:
 			return 80
-		} else if placing == 2 {
+		case 2:
 			return 60
-		} else if placing == 3 {
+		case 3:
 			return 40
-		} else if placing == 4 {
+		case 4:
 			return 30
-		} else if placing == 5 {
+		case 5:
 			return 20
-		} else if placing == 7 {
+		case 7:
 			return 15
-		} else if placing == 9 {
+		case 9:
 			return 12
-		} else if placing == 13 {
+		case 13:
 			return 9
-		} else if placing == 17 {
+		case 17:
 			return 6
-		} else if placing == 25 {
+		case 25:
 			return 3
-		} else if placing == 33 {
+		case 33:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 64 && numPlayers < 97 {
-		if placing == 1 {
+	case numPlayers > 48 && numPlayers < 65:
+		switch placing {
+		case 1:
+			return 80
+		case 2:
+			return 60
+		case 3:
+			return 40
+		case 4:
+			return 30
+		case 5:
+			return 20
+		case 7:
+			return 15
+		case 9:
+			return 12
+		case 13:
+			return 9
+		case 17:
+			return 6
+		case 25:
+			return 3
+		case 33:
+			return 2
+		default:
+			return 1
+		}
+	case numPlayers > 64 && numPlayers < 97:
+		switch placing {
+		case 1:
 			return 90
-		} else if placing == 2 {
+		case 2:
 			return 70
-		} else if placing == 3 {
+		case 3:
 			return 60
-		} else if placing == 4 {
+		case 4:
 			return 40
-		} else if placing == 5 {
+		case 5:
 			return 30
-		} else if placing == 7 {
+		case 7:
 			return 20
-		} else if placing == 9 {
+		case 9:
 			return 15
-		} else if placing == 13 {
+		case 13:
 			return 12
-		} else if placing == 17 {
+		case 17:
 			return 9
-		} else if placing == 25 {
+		case 25:
 			return 6
-		} else if placing == 33 {
+		case 33:
 			return 3
-		} else if placing == 49 {
+		case 49:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 96 && numPlayers < 129 {
-		if placing == 1 {
+	case numPlayers > 96 && numPlayers < 129:
+		switch placing {
+		case 1:
 			return 120
-		} else if placing == 2 {
+		case 2:
 			return 90
-		} else if placing == 3 {
+		case 3:
 			return 70
-		} else if placing == 4 {
+		case 4:
 			return 60
-		} else if placing == 5 {
+		case 5:
 			return 40
-		} else if placing == 7 {
+		case 7:
 			return 30
-		} else if placing == 9 {
+		case 9:
 			return 20
-		} else if placing == 13 {
+		case 13:
 			return 15
-		} else if placing == 17 {
+		case 17:
 			return 12
-		} else if placing == 25 {
+		case 25:
 			return 9
-		} else if placing == 33 {
+		case 33:
 			return 6
-		} else if placing == 49 {
+		case 49:
 			return 3
-		} else if placing == 65 {
+		case 65:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 128 && numPlayers < 193 {
-		if placing == 1 {
+	case numPlayers > 128 && numPlayers < 193:
+		switch placing {
+		case 1:
 			return 160
-		} else if placing == 2 {
+		case 2:
 			return 120
-		} else if placing == 3 {
+		case 3:
 			return 90
-		} else if placing == 4 {
+		case 4:
 			return 70
-		} else if placing == 5 {
+		case 5:
 			return 60
-		} else if placing == 7 {
+		case 7:
 			return 40
-		} else if placing == 9 {
+		case 9:
 			return 30
-		} else if placing == 13 {
+		case 13:
 			return 20
-		} else if placing == 17 {
+		case 17:
 			return 15
-		} else if placing == 25 {
+		case 25:
 			return 12
-		} else if placing == 33 {
+		case 33:
 			return 9
-		} else if placing == 49 {
+		case 49:
 			return 6
-		} else if placing == 65 {
+		case 65:
 			return 3
-		} else if placing == 97 {
+		case 97:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 192 && numPlayers < 257 {
-		if placing == 1 {
+	case numPlayers > 192 && numPlayers < 257:
+		switch placing {
+		case 1:
 			return 200
-		} else if placing == 2 {
+		case 2:
 			return 160
-		} else if placing == 3 {
+		case 3:
 			return 120
-		} else if placing == 4 {
+		case 4:
 			return 90
-		} else if placing == 5 {
+		case 5:
 			return 70
-		} else if placing == 7 {
+		case 7:
 			return 60
-		} else if placing == 9 {
+		case 9:
 			return 40
-		} else if placing == 13 {
+		case 13:
 			return 30
-		} else if placing == 17 {
+		case 17:
 			return 20
-		} else if placing == 25 {
+		case 25:
 			return 15
-		} else if placing == 33 {
+		case 33:
 			return 12
-		} else if placing == 49 {
+		case 49:
 			return 9
-		} else if placing == 65 {
+		case 65:
 			return 6
-		} else if placing == 97 {
+		case 97:
 			return 3
-		} else if placing == 129 {
+		case 129:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 256 && numPlayers < 385 {
-		if placing == 1 {
+	case numPlayers > 256 && numPlayers < 385:
+		switch placing {
+		case 1:
 			return 250
-		} else if placing == 2 {
+		case 2:
 			return 200
-		} else if placing == 3 {
+		case 3:
 			return 160
-		} else if placing == 4 {
+		case 4:
 			return 120
-		} else if placing == 5 {
+		case 5:
 			return 90
-		} else if placing == 7 {
+		case 7:
 			return 70
-		} else if placing == 9 {
+		case 9:
 			return 60
-		} else if placing == 13 {
+		case 13:
 			return 40
-		} else if placing == 17 {
+		case 17:
 			return 30
-		} else if placing == 25 {
+		case 25:
 			return 20
-		} else if placing == 33 {
+		case 33:
 			return 15
-		} else if placing == 49 {
+		case 49:
 			return 12
-		} else if placing == 65 {
+		case 65:
 			return 9
-		} else if placing == 97 {
+		case 97:
 			return 6
-		} else if placing == 129 {
+		case 129:
 			return 3
-		} else if placing == 193 {
+		case 193:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 384 && numPlayers < 513 {
-		if placing == 1 {
+	case numPlayers > 384 && numPlayers < 513:
+		switch placing {
+		case 1:
 			return 300
-		} else if placing == 2 {
+		case 2:
 			return 250
-		} else if placing == 3 {
+		case 3:
 			return 200
-		} else if placing == 4 {
+		case 4:
 			return 160
-		} else if placing == 5 {
+		case 5:
 			return 120
-		} else if placing == 7 {
+		case 7:
 			return 90
-		} else if placing == 9 {
+		case 9:
 			return 70
-		} else if placing == 13 {
+		case 13:
 			return 60
-		} else if placing == 17 {
+		case 17:
 			return 40
-		} else if placing == 25 {
+		case 25:
 			return 30
-		} else if placing == 33 {
+		case 33:
 			return 20
-		} else if placing == 49 {
+		case 49:
 			return 15
-		} else if placing == 65 {
+		case 65:
 			return 12
-		} else if placing == 97 {
+		case 97:
 			return 9
-		} else if placing == 129 {
+		case 129:
 			return 6
-		} else if placing == 193 {
+		case 193:
 			return 3
-		} else if placing == 257 {
+		case 257:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 512 && numPlayers < 769 {
-		if placing == 1 {
+	case numPlayers > 512 && numPlayers < 769:
+		switch placing {
+		case 1:
 			return 400
-		} else if placing == 2 {
+		case 2:
 			return 300
-		} else if placing == 3 {
+		case 3:
 			return 250
-		} else if placing == 4 {
+		case 4:
 			return 200
-		} else if placing == 5 {
+		case 5:
 			return 160
-		} else if placing == 7 {
+		case 7:
 			return 120
-		} else if placing == 9 {
+		case 9:
 			return 90
-		} else if placing == 13 {
+		case 13:
 			return 70
-		} else if placing == 17 {
+		case 17:
 			return 60
-		} else if placing == 25 {
+		case 25:
 			return 40
-		} else if placing == 33 {
+		case 33:
 			return 30
-		} else if placing == 49 {
+		case 49:
 			return 20
-		} else if placing == 65 {
+		case 65:
 			return 15
-		} else if placing == 97 {
+		case 97:
 			return 12
-		} else if placing == 129 {
+		case 129:
 			return 9
-		} else if placing == 193 {
+		case 193:
 			return 6
-		} else if placing == 257 {
+		case 257:
 			return 3
-		} else if placing == 385 {
+		case 385:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else if numPlayers > 768 && numPlayers < 1025 {
-		if placing == 1 {
+	case numPlayers > 768 && numPlayers < 1025:
+		switch placing {
+		case 1:
 			return 500
-		} else if placing == 2 {
+		case 2:
 			return 400
-		} else if placing == 3 {
+		case 3:
 			return 300
-		} else if placing == 4 {
+		case 4:
 			return 250
-		} else if placing == 5 {
+		case 5:
 			return 200
-		} else if placing == 7 {
+		case 7:
 			return 160
-		} else if placing == 9 {
+		case 9:
 			return 120
-		} else if placing == 13 {
+		case 13:
 			return 90
-		} else if placing == 17 {
+		case 17:
 			return 70
-		} else if placing == 25 {
+		case 25:
 			return 60
-		} else if placing == 33 {
+		case 33:
 			return 40
-		} else if placing == 49 {
+		case 49:
 			return 30
-		} else if placing == 65 {
+		case 65:
 			return 20
-		} else if placing == 97 {
+		case 97:
 			return 15
-		} else if placing == 129 {
+		case 129:
 			return 12
-		} else if placing == 193 {
+		case 193:
 			return 9
-		} else if placing == 257 {
+		case 257:
 			return 6
-		} else if placing == 385 {
+		case 385:
 			return 3
-		} else if placing == 513 {
+		case 513:
 			return 2
-		} else {
+		default:
 			return 1
 		}
-	} else {
-		if placing == 1 {
+	default:
+		switch placing {
+		case 1:
 			return 700
-		} else if placing == 2 {
+		case 2:
 			return 500
-		} else if placing == 3 {
+		case 3:
 			return 400
-		} else if placing == 4 {
+		case 4:
 			return 300
-		} else if placing == 5 {
+		case 5:
 			return 250
-		} else if placing == 7 {
+		case 7:
 			return 200
-		} else if placing == 9 {
+		case 9:
 			return 160
-		} else if placing == 13 {
+		case 13:
 			return 120
-		} else if placing == 17 {
+		case 17:
 			return 90
-		} else if placing == 25 {
+		case 25:
 			return 70
-		} else if placing == 33 {
+		case 33:
 			return 60
-		} else if placing == 49 {
+		case 49:
 			return 40
-		} else if placing == 65 {
+		case 65:
 			return 30
-		} else if placing == 97 {
+		case 97:
 			return 20
-		} else if placing == 129 {
+		case 129:
 			return 15
-		} else if placing == 193 {
+		case 193:
 			return 12
-		} else if placing == 257 {
+		case 257:
 			return 9
-		} else if placing == 385 {
+		case 385:
 			return 6
-		} else if placing == 513 {
+		case 513:
 			return 3
-		} else if placing == 769 {
+		case 769:
 			return 2
-		} else {
+		default:
 			return 1
 		}
 	}
