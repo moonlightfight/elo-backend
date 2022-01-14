@@ -387,3 +387,9 @@ func CreateTournament(response http.ResponseWriter, request *http.Request) {
 	// return tournament ID to frontend
 	json.NewEncoder(response).Encode(res)
 }
+
+func GetTournaments() {}
+
+func GetTournamentById(id string) {}
+
+func GetTournamentsByPlayerId(playerId string) {}
