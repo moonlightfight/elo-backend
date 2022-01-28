@@ -51,7 +51,8 @@ func main() {
 
 	// Player routes
 	router.HandleFunc("/api/player", player.CreatePlayerEndpoint).Methods("POST")
-	router.HandleFunc("/api/player", player.GetPlayersEndPoint).Methods("GET")
+	router.HandleFunc("/api/players", player.GetPlayersEndPoint).Methods("GET")
+	router.HandleFunc("/api/player", player.GetPlayerEndPoint).Queries("playerId", "{playerId}").Methods("GET")
 
 	// run the server
 	fmt.Printf("server listening on http://localhost%v\n", port)

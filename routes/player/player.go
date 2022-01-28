@@ -13,6 +13,7 @@ import (
 	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreatePlayerEndpoint(response http.ResponseWriter, request *http.Request) {
@@ -106,4 +107,28 @@ func GetPlayersEndPoint(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	json.NewEncoder(response).Encode(returnData)
+}
+
+func GetPlayerEndPoint(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("content-type", "application/json")
+
+	playerId, err := primitive.ObjectIDFromHex(request.FormValue("playerId"))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var player models.Player
+	client, err := database.ConfigDB()
+	if err != nil {
+		fmt.Println(err)
+	}
+	collection := client.Database("test").Collection("Player")
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	collErr := collection.FindOne(ctx, models.Player{ID: playerId}).Decode(&player)
+	if collErr != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(`{ "message": "` + collErr.Error() + `" }`))
+		return
+	}
+	json.NewEncoder(response).Encode(player)
 }
