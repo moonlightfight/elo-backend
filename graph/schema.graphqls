@@ -1,0 +1,50 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Admin {
+  _id: ID!
+  username: String!
+  email: String!
+  password: String!
+}
+
+type Player {
+  _id: ID!
+  slug: String!
+  username: String!
+  rating: Int!
+  score: Int!
+  country: String
+  twitter: String
+  twitch: String
+  instagram: String
+  realName: String
+}
+
+type Character {
+  _id: ID!
+  name: String!
+  imageLink: String!
+}
+
+type Query {
+  players: [Player!]!
+  characters: [Character!]!
+}
+
+input NewPlayer {
+  username: String!
+  rating: Int = 1200
+  score: Int = 0
+}
+
+input NewAdmin {
+  username: String!
+  email: String!
+}
+
+type Mutation {
+  createPlayer(input: NewPlayer!): Player!
+  createAdmin(input: NewAdmin!): Admin!
+}
