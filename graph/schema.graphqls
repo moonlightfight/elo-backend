@@ -97,6 +97,7 @@ type Query {
   characters: [Character!]!
   tournaments: [Tournament!]!
   matches: [Match!]!
+  teams: [Team!]!
 }
 
 input NewPlayer {

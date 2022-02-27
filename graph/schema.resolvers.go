@@ -39,6 +39,10 @@ func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
