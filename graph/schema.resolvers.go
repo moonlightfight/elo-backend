@@ -19,7 +19,11 @@ func (r *mutationResolver) CreateAdmin(ctx context.Context, input model.NewAdmin
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) LoginAdmin(ctx context.Context, input *model.LoginAdmin) (*model.Jwt, error) {
+func (r *mutationResolver) LoginAdmin(ctx context.Context, input model.LoginAdmin) (*model.Jwt, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

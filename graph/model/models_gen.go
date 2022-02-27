@@ -53,6 +53,15 @@ type NewPlayer struct {
 	Score    *int   `json:"score"`
 }
 
+type NewTeam struct {
+	Slug         string  `json:"slug"`
+	Name         string  `json:"name"`
+	Abbreviation string  `json:"abbreviation"`
+	Logo         *string `json:"logo"`
+	Twitter      *string `json:"twitter"`
+	Website      *string `json:"website"`
+}
+
 type Player struct {
 	ID            string        `json:"_id"`
 	Slug          string        `json:"slug"`

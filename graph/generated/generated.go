@@ -75,7 +75,8 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateAdmin  func(childComplexity int, input model.NewAdmin) int
 		CreatePlayer func(childComplexity int, input model.NewPlayer) int
-		LoginAdmin   func(childComplexity int, input *model.LoginAdmin) int
+		CreateTeam   func(childComplexity int, input model.NewTeam) int
+		LoginAdmin   func(childComplexity int, input model.LoginAdmin) int
 	}
 
 	Player struct {
@@ -143,7 +144,8 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error)
 	CreateAdmin(ctx context.Context, input model.NewAdmin) (*model.Admin, error)
-	LoginAdmin(ctx context.Context, input *model.LoginAdmin) (*model.Jwt, error)
+	LoginAdmin(ctx context.Context, input model.LoginAdmin) (*model.Jwt, error)
+	CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
 }
 type QueryResolver interface {
 	Players(ctx context.Context) ([]*model.Player, error)
@@ -304,6 +306,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreatePlayer(childComplexity, args["input"].(model.NewPlayer)), true
 
+	case "Mutation.createTeam":
+		if e.complexity.Mutation.CreateTeam == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTeam_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTeam(childComplexity, args["input"].(model.NewTeam)), true
+
 	case "Mutation.loginAdmin":
 		if e.complexity.Mutation.LoginAdmin == nil {
 			break
@@ -314,7 +328,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.LoginAdmin(childComplexity, args["input"].(*model.LoginAdmin)), true
+		return e.complexity.Mutation.LoginAdmin(childComplexity, args["input"].(model.LoginAdmin)), true
 
 	case "Player.controller":
 		if e.complexity.Player.Controller == nil {
@@ -820,10 +834,20 @@ input LoginAdmin {
   password: String!
 }
 
+input NewTeam {
+  slug: String!
+  name: String!
+  abbreviation: String!
+  logo: String
+  twitter: String
+  website: String
+}
+
 type Mutation {
   createPlayer(input: NewPlayer!): Player!
   createAdmin(input: NewAdmin!): Admin!
-  loginAdmin(input: LoginAdmin): Jwt!
+  loginAdmin(input: LoginAdmin!): Jwt!
+  createTeam(input: NewTeam!): Team!
 }
 `, BuiltIn: false},
 }
@@ -863,13 +887,28 @@ func (ec *executionContext) field_Mutation_createPlayer_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTeam_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewTeam
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTeam(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_loginAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.LoginAdmin
+	var arg0 model.LoginAdmin
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOLoginAdmin2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐLoginAdmin(ctx, tmp)
+		arg0, err = ec.unmarshalNLoginAdmin2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐLoginAdmin(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1600,7 +1639,7 @@ func (ec *executionContext) _Mutation_loginAdmin(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().LoginAdmin(rctx, args["input"].(*model.LoginAdmin))
+		return ec.resolvers.Mutation().LoginAdmin(rctx, args["input"].(model.LoginAdmin))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1615,6 +1654,48 @@ func (ec *executionContext) _Mutation_loginAdmin(ctx context.Context, field grap
 	res := resTmp.(*model.Jwt)
 	fc.Result = res
 	return ec.marshalNJwt2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐJwt(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTeam(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTeam_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTeam(rctx, args["input"].(model.NewTeam))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Team)
+	fc.Result = res
+	return ec.marshalNTeam2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Player__id(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
@@ -4477,6 +4558,69 @@ func (ec *executionContext) unmarshalInputNewPlayer(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj interface{}) (model.NewTeam, error) {
+	var it model.NewTeam
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "abbreviation":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("abbreviation"))
+			it.Abbreviation, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "logo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logo"))
+			it.Logo, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "twitter":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("twitter"))
+			it.Twitter, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "website":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("website"))
+			it.Website, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -4771,6 +4915,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "loginAdmin":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_loginAdmin(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTeam":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createTeam(ctx, field)
 			}
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
@@ -5937,6 +6091,11 @@ func (ec *executionContext) marshalNJwt2ᚖgithubᚗcomᚋmoonlightfightᚋelo�
 	return ec._Jwt(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNLoginAdmin2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐLoginAdmin(ctx context.Context, v interface{}) (model.LoginAdmin, error) {
+	res, err := ec.unmarshalInputLoginAdmin(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNMatch2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx context.Context, sel ast.SelectionSet, v []*model.Match) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -6039,6 +6198,11 @@ func (ec *executionContext) unmarshalNNewPlayer2githubᚗcomᚋmoonlightfightᚋ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTeam(ctx context.Context, v interface{}) (model.NewTeam, error) {
+	res, err := ec.unmarshalInputNewTeam(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNPlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v model.Player) graphql.Marshaler {
 	return ec._Player(ctx, sel, &v)
 }
@@ -6110,6 +6274,10 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v model.Team) graphql.Marshaler {
+	return ec._Team(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTeam2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeamᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Team) graphql.Marshaler {
@@ -6668,14 +6836,6 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
-}
-
-func (ec *executionContext) unmarshalOLoginAdmin2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐLoginAdmin(ctx context.Context, v interface{}) (*model.LoginAdmin, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputLoginAdmin(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOMatch2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx context.Context, sel ast.SelectionSet, v *model.Match) graphql.Marshaler {

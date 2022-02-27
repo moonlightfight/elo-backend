@@ -116,8 +116,18 @@ input LoginAdmin {
   password: String!
 }
 
+input NewTeam {
+  slug: String!
+  name: String!
+  abbreviation: String!
+  logo: String
+  twitter: String
+  website: String
+}
+
 type Mutation {
   createPlayer(input: NewPlayer!): Player!
   createAdmin(input: NewAdmin!): Admin!
-  loginAdmin(input: LoginAdmin): Jwt!
+  loginAdmin(input: LoginAdmin!): Jwt!
+  createTeam(input: NewTeam!): Team!
 }
