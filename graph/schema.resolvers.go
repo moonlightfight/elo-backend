@@ -19,11 +19,23 @@ func (r *mutationResolver) CreateAdmin(ctx context.Context, input model.NewAdmin
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) LoginAdmin(ctx context.Context, input *model.LoginAdmin) (*model.Jwt, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Characters(ctx context.Context) ([]*model.Character, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

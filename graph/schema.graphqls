@@ -2,6 +2,15 @@
 #
 # https://gqlgen.com/getting-started/
 
+scalar Time
+
+enum BracketType {
+  DOUBLE_ELIM
+  SINGLE_ELIM
+  SWISS
+  ROUND_ROBIN
+}
+
 type Admin {
   _id: ID!
   username: String!
@@ -20,6 +29,13 @@ type Player {
   twitch: String
   instagram: String
   realName: String
+  team: Team
+  mainCharacter: Character
+  subCharacters: [Character]
+  picture: String
+  controller: String
+  tournaments: [Tournament]!
+  matches: [Match]!
 }
 
 type Character {
@@ -28,9 +44,59 @@ type Character {
   imageLink: String!
 }
 
+type Jwt {
+  jwt: String!
+}
+
+type Team {
+  _id: ID!
+  slug: String!
+  name: String!
+  abbreviation: String!
+  logo: String
+  twitter: String
+  website: String
+}
+
+type Tournament {
+  _id: ID!
+  name: String!
+  slug: String!
+  location: String
+  bracketUrl: String
+  noBracket: Boolean!
+  numPlayers: Int!
+  date: Time!
+  dateAdded: Time!
+  replay: String
+  results: [TournamentResult!]!
+  matches: [Match!]!
+  bracketType: BracketType!
+}
+
+type TournamentResult {
+  place: Int!
+  points: Int!
+  player: Player!
+  CharactersUsed: [Character]
+}
+
+type Match {
+  _id: ID!
+  winningPlayer: Player!
+  losingPlayer: Player!
+  date: Time!
+  winningPlayerStartingElo: Int!
+  winningPlayerEndingElo: Int!
+  losingPlayerStartingElo: Int!
+  losingPlayerEndingElo: Int!
+}
+
 type Query {
   players: [Player!]!
   characters: [Character!]!
+  tournaments: [Tournament!]!
+  matches: [Match!]!
 }
 
 input NewPlayer {
@@ -44,7 +110,13 @@ input NewAdmin {
   email: String!
 }
 
+input LoginAdmin {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   createPlayer(input: NewPlayer!): Player!
   createAdmin(input: NewAdmin!): Admin!
+  loginAdmin(input: LoginAdmin): Jwt!
 }
