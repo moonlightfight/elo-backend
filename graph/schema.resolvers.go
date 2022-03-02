@@ -7,9 +7,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/moonlightfight/elo-backend/constants"
+	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/graph/generated"
 	"github.com/moonlightfight/elo-backend/graph/model"
 )
+
+var mongodbUri = constants.GetDbUri()
+
+var db = database.Connect(mongodbUri)
 
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
 	panic(fmt.Errorf("not implemented"))
