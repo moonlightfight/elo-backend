@@ -17,3 +17,14 @@ func GetDbUri() string {
 
 	return mongodbUri
 }
+
+func GetDbName() string {
+	err := godotenv.Load("local.env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	databaseName := os.Getenv("DATABASE_NAME")
+
+	return databaseName
+}

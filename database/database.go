@@ -5,10 +5,15 @@ import (
 	"log"
 	"time"
 
+	"github.com/moonlightfight/elo-backend/constants"
+	"github.com/moonlightfight/elo-backend/graph/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+var databaseName = constants.GetDbName()
 
 type DB struct {
 	client *mongo.Client
@@ -40,4 +45,26 @@ func Connect(dbUrl string) *DB {
 	return &DB{
 		client: client,
 	}
+}
+
+func (db *DB) GetPlayers() []*model.Player {
+	playerColl := db.client.Database(databaseName).Collection("Player")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	cursor, err := playerColl.Find(ctx, bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var players []*model.Player
+
+	for cursor.Next(ctx) {
+		var player *model.Player
+
+		cursor.Decode(&player)
+
+		players = append(players, player)
+	}
+
+	return players
 }
