@@ -34,7 +34,7 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 }
 
 func (r *queryResolver) Characters(ctx context.Context) ([]*model.Character, error) {
-	panic(fmt.Errorf("not implemented"))
+	return db.GetCharacters(), nil
 }
 
 func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
@@ -58,5 +58,6 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+// connect to db
 var mongodbUri = constants.GetDbUri()
 var db = database.Connect(mongodbUri)

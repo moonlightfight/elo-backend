@@ -68,3 +68,25 @@ func (db *DB) GetPlayers() []*model.Player {
 
 	return players
 }
+
+func (db *DB) GetCharacters() []*model.Character {
+	charactersColl := db.client.Database(databaseName).Collection("Character")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	cursor, err := charactersColl.Find(ctx, bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var characters []*model.Character
+
+	for cursor.Next(ctx) {
+		var character *model.Character
+
+		cursor.Decode(&character)
+
+		characters = append(characters, character)
+	}
+
+	return characters
+}
