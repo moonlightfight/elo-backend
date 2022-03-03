@@ -7,6 +7,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/moonlightfight/elo-backend/constants"
+	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/graph/generated"
 	"github.com/moonlightfight/elo-backend/graph/model"
 )
@@ -28,7 +30,7 @@ func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) 
 }
 
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
-
+	return db.GetPlayers(), nil
 }
 
 func (r *queryResolver) Characters(ctx context.Context) ([]*model.Character, error) {
@@ -55,3 +57,6 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+var mongodbUri = constants.GetDbUri()
+var db = database.Connect(mongodbUri)
