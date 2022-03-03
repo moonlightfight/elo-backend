@@ -68,6 +68,7 @@ type ComplexityRoot struct {
 	}
 
 	ApiReturnedTournament struct {
+		BracketType    func(childComplexity int) int
 		Matches        func(childComplexity int) int
 		NumPlayers     func(childComplexity int) int
 		Players        func(childComplexity int) int
@@ -293,6 +294,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ApiReturnedPlayer.Place(childComplexity), true
+
+	case "ApiReturnedTournament.bracketType":
+		if e.complexity.ApiReturnedTournament.BracketType == nil {
+			break
+		}
+
+		return e.complexity.ApiReturnedTournament.BracketType(childComplexity), true
 
 	case "ApiReturnedTournament.matches":
 		if e.complexity.ApiReturnedTournament.Matches == nil {
@@ -948,6 +956,7 @@ type ApiReturnedTournament {
   tournamentDate: Time!
   players: [ApiReturnedPlayer!]!
   matches: [ApiReturnedMatch!]!
+  bracketType: BracketType!
 }
 
 type ApiReturnedPlayer {
@@ -1820,6 +1829,41 @@ func (ec *executionContext) _ApiReturnedTournament_matches(ctx context.Context, 
 	res := resTmp.([]*model.APIReturnedMatch)
 	fc.Result = res
 	return ec.marshalNApiReturnedMatch2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐAPIReturnedMatchᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ApiReturnedTournament_bracketType(ctx context.Context, field graphql.CollectedField, obj *model.APIReturnedTournament) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ApiReturnedTournament",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BracketType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.BracketType)
+	fc.Result = res
+	return ec.marshalNBracketType2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐBracketType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Character__id(ctx context.Context, field graphql.CollectedField, obj *model.Character) (ret graphql.Marshaler) {
@@ -5726,6 +5770,16 @@ func (ec *executionContext) _ApiReturnedTournament(ctx context.Context, sel ast.
 		case "matches":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._ApiReturnedTournament_matches(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "bracketType":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._ApiReturnedTournament_bracketType(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)

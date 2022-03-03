@@ -87,6 +87,7 @@ type ApiReturnedTournament {
   tournamentDate: Time!
   players: [ApiReturnedPlayer!]!
   matches: [ApiReturnedMatch!]!
+  bracketType: BracketType!
 }
 
 type ApiReturnedPlayer {

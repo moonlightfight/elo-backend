@@ -38,6 +38,7 @@ type APIReturnedTournament struct {
 	TournamentDate time.Time            `json:"tournamentDate"`
 	Players        []*APIReturnedPlayer `json:"players"`
 	Matches        []*APIReturnedMatch  `json:"matches"`
+	BracketType    BracketType          `json:"bracketType"`
 }
 
 type Character struct {
