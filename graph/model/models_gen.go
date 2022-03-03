@@ -16,6 +16,30 @@ type Admin struct {
 	Password string `json:"password"`
 }
 
+type APIReturnedMatch struct {
+	WinnerID    int       `json:"winnerId"`
+	LoserID     int       `json:"loserId"`
+	WinnerName  string    `json:"winnerName"`
+	LoserName   string    `json:"loserName"`
+	WinnerScore int       `json:"winnerScore"`
+	LoserScore  int       `json:"loserScore"`
+	MatchDate   time.Time `json:"matchDate"`
+}
+
+type APIReturnedPlayer struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Place int    `json:"place"`
+}
+
+type APIReturnedTournament struct {
+	Title          string               `json:"title"`
+	NumPlayers     int                  `json:"numPlayers"`
+	TournamentDate time.Time            `json:"tournamentDate"`
+	Players        []*APIReturnedPlayer `json:"players"`
+	Matches        []*APIReturnedMatch  `json:"matches"`
+}
+
 type Character struct {
 	ID        string `json:"_id"`
 	Name      string `json:"name"`
@@ -108,11 +132,15 @@ type Tournament struct {
 	BracketType BracketType         `json:"bracketType"`
 }
 
+type TournamentFromAPI struct {
+	URL string `json:"url"`
+}
+
 type TournamentResult struct {
 	Place          int          `json:"place"`
 	Points         int          `json:"points"`
 	Player         *Player      `json:"player"`
-	CharactersUsed []*Character `json:"CharactersUsed"`
+	CharactersUsed []*Character `json:"charactersUsed"`
 }
 
 type BracketType string

@@ -78,7 +78,31 @@ type TournamentResult {
   place: Int!
   points: Int!
   player: Player!
-  CharactersUsed: [Character]
+  charactersUsed: [Character]
+}
+
+type ApiReturnedTournament {
+  title: String!
+  numPlayers: Int!
+  tournamentDate: Time!
+  players: [ApiReturnedPlayer!]!
+  matches: [ApiReturnedMatch!]!
+}
+
+type ApiReturnedPlayer {
+  id: Int!
+  name: String!
+  place: Int!
+}
+
+type ApiReturnedMatch {
+  winnerId: Int!
+  loserId: Int!
+  winnerName: String!
+  loserName: String!
+  winnerScore: Int!
+  loserScore: Int!
+  matchDate: Time!
 }
 
 type Match {
@@ -98,6 +122,7 @@ type Query {
   tournaments: [Tournament!]!
   matches: [Match!]!
   teams: [Team!]!
+  tournamentFromApi(input: TournamentFromApi!): ApiReturnedTournament!
 }
 
 input NewPlayer {
@@ -123,6 +148,10 @@ input NewTeam {
   logo: String
   twitter: String
   website: String
+}
+
+input TournamentFromApi {
+  url: String!
 }
 
 type Mutation {
