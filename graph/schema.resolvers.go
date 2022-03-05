@@ -53,6 +53,18 @@ func (r *queryResolver) TournamentFromAPI(ctx context.Context, input model.Tourn
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *queryResolver) Player(ctx context.Context, input model.SinglePlayer) (*model.Player, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Team(ctx context.Context, input model.SingleTeam) (*model.Team, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Tournament(ctx context.Context, input model.SingleTournament) (*model.Tournament, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

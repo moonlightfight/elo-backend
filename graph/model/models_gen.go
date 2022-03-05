@@ -107,6 +107,18 @@ type Player struct {
 	Matches       []*Match      `json:"matches"`
 }
 
+type SinglePlayer struct {
+	Slug string `json:"slug"`
+}
+
+type SingleTeam struct {
+	Slug string `json:"slug"`
+}
+
+type SingleTournament struct {
+	Slug string `json:"slug"`
+}
+
 type Team struct {
 	ID           string  `json:"_id"`
 	Slug         string  `json:"slug"`

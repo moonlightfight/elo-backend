@@ -124,12 +124,27 @@ type Query {
   matches: [Match!]!
   teams: [Team!]!
   tournamentFromApi(input: TournamentFromApi!): ApiReturnedTournament!
+  player(input: SinglePlayer!): Player!
+  team(input: SingleTeam!): Team!
+  tournament(input: SingleTournament!): Tournament!
 }
 
 input NewPlayer {
   username: String!
   rating: Int = 1200
   score: Int = 0
+}
+
+input SinglePlayer {
+  slug: String!
+}
+
+input SingleTournament {
+  slug: String!
+}
+
+input SingleTeam {
+  slug: String!
 }
 
 input NewAdmin {

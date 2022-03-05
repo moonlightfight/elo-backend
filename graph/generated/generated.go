@@ -127,8 +127,11 @@ type ComplexityRoot struct {
 	Query struct {
 		Characters        func(childComplexity int) int
 		Matches           func(childComplexity int) int
+		Player            func(childComplexity int, input model.SinglePlayer) int
 		Players           func(childComplexity int) int
+		Team              func(childComplexity int, input model.SingleTeam) int
 		Teams             func(childComplexity int) int
+		Tournament        func(childComplexity int, input model.SingleTournament) int
 		TournamentFromAPI func(childComplexity int, input model.TournamentFromAPI) int
 		Tournaments       func(childComplexity int) int
 	}
@@ -180,6 +183,9 @@ type QueryResolver interface {
 	Matches(ctx context.Context) ([]*model.Match, error)
 	Teams(ctx context.Context) ([]*model.Team, error)
 	TournamentFromAPI(ctx context.Context, input model.TournamentFromAPI) (*model.APIReturnedTournament, error)
+	Player(ctx context.Context, input model.SinglePlayer) (*model.Player, error)
+	Team(ctx context.Context, input model.SingleTeam) (*model.Team, error)
+	Tournament(ctx context.Context, input model.SingleTournament) (*model.Tournament, error)
 }
 
 type executableSchema struct {
@@ -602,6 +608,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Matches(childComplexity), true
 
+	case "Query.player":
+		if e.complexity.Query.Player == nil {
+			break
+		}
+
+		args, err := ec.field_Query_player_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Player(childComplexity, args["input"].(model.SinglePlayer)), true
+
 	case "Query.players":
 		if e.complexity.Query.Players == nil {
 			break
@@ -609,12 +627,36 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Players(childComplexity), true
 
+	case "Query.team":
+		if e.complexity.Query.Team == nil {
+			break
+		}
+
+		args, err := ec.field_Query_team_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Team(childComplexity, args["input"].(model.SingleTeam)), true
+
 	case "Query.teams":
 		if e.complexity.Query.Teams == nil {
 			break
 		}
 
 		return e.complexity.Query.Teams(childComplexity), true
+
+	case "Query.tournament":
+		if e.complexity.Query.Tournament == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tournament_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Tournament(childComplexity, args["input"].(model.SingleTournament)), true
 
 	case "Query.tournamentFromApi":
 		if e.complexity.Query.TournamentFromAPI == nil {
@@ -993,12 +1035,27 @@ type Query {
   matches: [Match!]!
   teams: [Team!]!
   tournamentFromApi(input: TournamentFromApi!): ApiReturnedTournament!
+  player(input: SinglePlayer!): Player!
+  team(input: SingleTeam!): Team!
+  tournament(input: SingleTournament!): Tournament!
 }
 
 input NewPlayer {
   username: String!
   rating: Int = 1200
   score: Int = 0
+}
+
+input SinglePlayer {
+  slug: String!
+}
+
+input SingleTournament {
+  slug: String!
+}
+
+input SingleTeam {
+  slug: String!
 }
 
 input NewAdmin {
@@ -1113,6 +1170,36 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_player_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SinglePlayer
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSinglePlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSinglePlayer(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_team_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SingleTeam
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSingleTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleTeam(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_tournamentFromApi_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1120,6 +1207,21 @@ func (ec *executionContext) field_Query_tournamentFromApi_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNTournamentFromApi2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournamentFromAPI(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tournament_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SingleTournament
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSingleTournament2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleTournament(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3234,6 +3336,132 @@ func (ec *executionContext) _Query_tournamentFromApi(ctx context.Context, field 
 	res := resTmp.(*model.APIReturnedTournament)
 	fc.Result = res
 	return ec.marshalNApiReturnedTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐAPIReturnedTournament(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_player(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_player_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Player(rctx, args["input"].(model.SinglePlayer))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Player)
+	fc.Result = res
+	return ec.marshalNPlayer2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐPlayer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_team(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_team_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Team(rctx, args["input"].(model.SingleTeam))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Team)
+	fc.Result = res
+	return ec.marshalNTeam2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_tournament(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_tournament_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Tournament(rctx, args["input"].(model.SingleTournament))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Tournament)
+	fc.Result = res
+	return ec.marshalNTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5483,6 +5711,75 @@ func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSinglePlayer(ctx context.Context, obj interface{}) (model.SinglePlayer, error) {
+	var it model.SinglePlayer
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSingleTeam(ctx context.Context, obj interface{}) (model.SingleTeam, error) {
+	var it model.SingleTeam
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSingleTournament(ctx context.Context, obj interface{}) (model.SingleTournament, error) {
+	var it model.SingleTournament
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTournamentFromApi(ctx context.Context, obj interface{}) (model.TournamentFromAPI, error) {
 	var it model.TournamentFromAPI
 	asMap := map[string]interface{}{}
@@ -6356,6 +6653,75 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_tournamentFromApi(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "player":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_player(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "team":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_team(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "tournament":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_tournament(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7528,6 +7894,21 @@ func (ec *executionContext) marshalNPlayer2ᚖgithubᚗcomᚋmoonlightfightᚋel
 	return ec._Player(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNSinglePlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSinglePlayer(ctx context.Context, v interface{}) (model.SinglePlayer, error) {
+	res, err := ec.unmarshalInputSinglePlayer(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSingleTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleTeam(ctx context.Context, v interface{}) (model.SingleTeam, error) {
+	res, err := ec.unmarshalInputSingleTeam(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSingleTournament2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleTournament(ctx context.Context, v interface{}) (model.SingleTournament, error) {
+	res, err := ec.unmarshalInputSingleTournament(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7614,6 +7995,10 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNTournament2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx context.Context, sel ast.SelectionSet, v model.Tournament) graphql.Marshaler {
+	return ec._Tournament(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNTournament2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx context.Context, sel ast.SelectionSet, v []*model.Tournament) graphql.Marshaler {
