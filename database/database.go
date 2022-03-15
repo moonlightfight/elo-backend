@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var databaseName = constants.GetDbName()
+var databaseName = constants.GetEnvVar("DATABASE_NAME")
 
 type DB struct {
 	client *mongo.Client

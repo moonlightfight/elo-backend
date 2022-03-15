@@ -8,7 +8,7 @@ import (
 )
 
 func GetDbUri() string {
-	err := godotenv.Load("local.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Some error occured. Err: %s", err)
 	}
@@ -18,13 +18,13 @@ func GetDbUri() string {
 	return mongodbUri
 }
 
-func GetDbName() string {
-	err := godotenv.Load("local.env")
+func GetEnvVar(varName string) string {
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Some error occured. Err: %s", err)
 	}
 
-	databaseName := os.Getenv("DATABASE_NAME")
+	key := os.Getenv(varName)
 
-	return databaseName
+	return key
 }
