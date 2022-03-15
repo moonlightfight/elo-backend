@@ -72,6 +72,14 @@ type NewAdmin struct {
 	Email    string `json:"email"`
 }
 
+type NewMatchResult struct {
+	WinnerID    string    `json:"winnerId"`
+	LoserID     string    `json:"loserId"`
+	WinnerScore int       `json:"winnerScore"`
+	LoserScore  int       `json:"loserScore"`
+	Date        time.Time `json:"date"`
+}
+
 type NewPlayer struct {
 	Username string `json:"username"`
 	Rating   *int   `json:"rating"`
@@ -85,6 +93,28 @@ type NewTeam struct {
 	Logo         *string `json:"logo"`
 	Twitter      *string `json:"twitter"`
 	Website      *string `json:"website"`
+}
+
+type NewTournament struct {
+	Name        string                 `json:"name"`
+	Slug        string                 `json:"slug"`
+	Location    *string                `json:"location"`
+	BracketURL  *string                `json:"bracketUrl"`
+	NoBracket   bool                   `json:"noBracket"`
+	NumPlayers  int                    `json:"numPlayers"`
+	Date        time.Time              `json:"date"`
+	DateAdded   time.Time              `json:"dateAdded"`
+	Replay      *string                `json:"replay"`
+	Results     []*NewTournamentResult `json:"results"`
+	Matches     []*NewMatchResult      `json:"matches"`
+	BracketType BracketType            `json:"bracketType"`
+}
+
+type NewTournamentResult struct {
+	Place          int      `json:"place"`
+	Points         int      `json:"points"`
+	Player         string   `json:"player"`
+	CharactersUsed []string `json:"charactersUsed"`
 }
 
 type Player struct {

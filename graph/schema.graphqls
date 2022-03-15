@@ -135,6 +135,36 @@ input NewPlayer {
   score: Int = 0
 }
 
+input NewTournament {
+  name: String!
+  slug: String!
+  location: String
+  bracketUrl: String
+  noBracket: Boolean!
+  numPlayers: Int!
+  date: Time!
+  dateAdded: Time!
+  replay: String
+  results: [NewTournamentResult!]!
+  matches: [NewMatchResult!]!
+  bracketType: BracketType!
+}
+
+input NewMatchResult {
+  winnerId: ID!
+  loserId: ID!
+  winnerScore: Int!
+  loserScore: Int!
+  date: Time!
+}
+
+input NewTournamentResult {
+  place: Int!
+  points: Int!
+  player: ID!
+  charactersUsed: [ID!]!
+}
+
 input SinglePlayer {
   slug: String!
 }
@@ -175,4 +205,5 @@ type Mutation {
   createAdmin(input: NewAdmin!): Admin!
   loginAdmin(input: LoginAdmin!): Jwt!
   createTeam(input: NewTeam!): Team!
+  createTournament(input: NewTournament!): Tournament!
 }

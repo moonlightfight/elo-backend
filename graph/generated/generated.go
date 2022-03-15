@@ -98,10 +98,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAdmin  func(childComplexity int, input model.NewAdmin) int
-		CreatePlayer func(childComplexity int, input model.NewPlayer) int
-		CreateTeam   func(childComplexity int, input model.NewTeam) int
-		LoginAdmin   func(childComplexity int, input model.LoginAdmin) int
+		CreateAdmin      func(childComplexity int, input model.NewAdmin) int
+		CreatePlayer     func(childComplexity int, input model.NewPlayer) int
+		CreateTeam       func(childComplexity int, input model.NewTeam) int
+		CreateTournament func(childComplexity int, input model.NewTournament) int
+		LoginAdmin       func(childComplexity int, input model.LoginAdmin) int
 	}
 
 	Player struct {
@@ -175,6 +176,7 @@ type MutationResolver interface {
 	CreateAdmin(ctx context.Context, input model.NewAdmin) (*model.Admin, error)
 	LoginAdmin(ctx context.Context, input model.LoginAdmin) (*model.Jwt, error)
 	CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
+	CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error)
 }
 type QueryResolver interface {
 	Players(ctx context.Context) ([]*model.Player, error)
@@ -462,6 +464,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateTeam(childComplexity, args["input"].(model.NewTeam)), true
+
+	case "Mutation.createTournament":
+		if e.complexity.Mutation.CreateTournament == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTournament_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTournament(childComplexity, args["input"].(model.NewTournament)), true
 
 	case "Mutation.loginAdmin":
 		if e.complexity.Mutation.LoginAdmin == nil {
@@ -1046,6 +1060,36 @@ input NewPlayer {
   score: Int = 0
 }
 
+input NewTournament {
+  name: String!
+  slug: String!
+  location: String
+  bracketUrl: String
+  noBracket: Boolean!
+  numPlayers: Int!
+  date: Time!
+  dateAdded: Time!
+  replay: String
+  results: [NewTournamentResult!]!
+  matches: [NewMatchResult!]!
+  bracketType: BracketType!
+}
+
+input NewMatchResult {
+  winnerId: ID!
+  loserId: ID!
+  winnerScore: Int!
+  loserScore: Int!
+  date: Time!
+}
+
+input NewTournamentResult {
+  place: Int!
+  points: Int!
+  player: ID!
+  charactersUsed: [ID!]!
+}
+
 input SinglePlayer {
   slug: String!
 }
@@ -1086,6 +1130,7 @@ type Mutation {
   createAdmin(input: NewAdmin!): Admin!
   loginAdmin(input: LoginAdmin!): Jwt!
   createTeam(input: NewTeam!): Team!
+  createTournament(input: NewTournament!): Tournament!
 }
 `, BuiltIn: false},
 }
@@ -1132,6 +1177,21 @@ func (ec *executionContext) field_Mutation_createTeam_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTeam(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createTournament_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewTournament
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewTournament2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournament(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2554,6 +2614,48 @@ func (ec *executionContext) _Mutation_createTeam(ctx context.Context, field grap
 	res := resTmp.(*model.Team)
 	fc.Result = res
 	return ec.marshalNTeam2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTournament(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTournament_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTournament(rctx, args["input"].(model.NewTournament))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Tournament)
+	fc.Result = res
+	return ec.marshalNTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Player__id(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
@@ -5602,6 +5704,61 @@ func (ec *executionContext) unmarshalInputNewAdmin(ctx context.Context, obj inte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewMatchResult(ctx context.Context, obj interface{}) (model.NewMatchResult, error) {
+	var it model.NewMatchResult
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "winnerId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("winnerId"))
+			it.WinnerID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "loserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loserId"))
+			it.LoserID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "winnerScore":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("winnerScore"))
+			it.WinnerScore, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "loserScore":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loserScore"))
+			it.LoserScore, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "date":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			it.Date, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewPlayer(ctx context.Context, obj interface{}) (model.NewPlayer, error) {
 	var it model.NewPlayer
 	asMap := map[string]interface{}{}
@@ -5702,6 +5859,164 @@ func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("website"))
 			it.Website, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewTournament(ctx context.Context, obj interface{}) (model.NewTournament, error) {
+	var it model.NewTournament
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "bracketUrl":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bracketUrl"))
+			it.BracketURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "noBracket":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("noBracket"))
+			it.NoBracket, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "numPlayers":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("numPlayers"))
+			it.NumPlayers, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "date":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			it.Date, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dateAdded":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateAdded"))
+			it.DateAdded, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "replay":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("replay"))
+			it.Replay, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "results":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("results"))
+			it.Results, err = ec.unmarshalNNewTournamentResult2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournamentResultᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "matches":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("matches"))
+			it.Matches, err = ec.unmarshalNNewMatchResult2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResultᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "bracketType":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bracketType"))
+			it.BracketType, err = ec.unmarshalNBracketType2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐBracketType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewTournamentResult(ctx context.Context, obj interface{}) (model.NewTournamentResult, error) {
+	var it model.NewTournamentResult
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "place":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("place"))
+			it.Place, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "points":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("points"))
+			it.Points, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "player":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("player"))
+			it.Player, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "charactersUsed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("charactersUsed"))
+			it.CharactersUsed, err = ec.unmarshalNID2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6330,6 +6645,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createTeam":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createTeam(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTournament":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createTournament(ctx, field)
 			}
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
@@ -7695,6 +8020,38 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
+func (ec *executionContext) unmarshalNID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7826,6 +8183,28 @@ func (ec *executionContext) unmarshalNNewAdmin2githubᚗcomᚋmoonlightfightᚋe
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewMatchResult2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResultᚄ(ctx context.Context, v interface{}) ([]*model.NewMatchResult, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.NewMatchResult, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNNewMatchResult2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResult(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNNewMatchResult2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResult(ctx context.Context, v interface{}) (*model.NewMatchResult, error) {
+	res, err := ec.unmarshalInputNewMatchResult(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewPlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewPlayer(ctx context.Context, v interface{}) (model.NewPlayer, error) {
 	res, err := ec.unmarshalInputNewPlayer(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7834,6 +8213,33 @@ func (ec *executionContext) unmarshalNNewPlayer2githubᚗcomᚋmoonlightfightᚋ
 func (ec *executionContext) unmarshalNNewTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTeam(ctx context.Context, v interface{}) (model.NewTeam, error) {
 	res, err := ec.unmarshalInputNewTeam(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewTournament2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournament(ctx context.Context, v interface{}) (model.NewTournament, error) {
+	res, err := ec.unmarshalInputNewTournament(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewTournamentResult2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournamentResultᚄ(ctx context.Context, v interface{}) ([]*model.NewTournamentResult, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.NewTournamentResult, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNNewTournamentResult2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournamentResult(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNNewTournamentResult2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewTournamentResult(ctx context.Context, v interface{}) (*model.NewTournamentResult, error) {
+	res, err := ec.unmarshalInputNewTournamentResult(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNPlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v model.Player) graphql.Marshaler {

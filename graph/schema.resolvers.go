@@ -29,6 +29,10 @@ func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) 
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	return db.GetPlayers(), nil
 }
