@@ -8,6 +8,7 @@ import (
 	"github.com/moonlightfight/elo-backend/constants"
 	"github.com/moonlightfight/elo-backend/graph/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -89,4 +90,24 @@ func (db *DB) GetCharacters() []*model.Character {
 	}
 
 	return characters
+}
+
+func (db *DB) CreatePlayer(player model.Player) *model.Player {
+	playerColl := db.client.Database(databaseName).Collection("Player")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := playerColl.InsertOne(ctx, bson.D{{Key: "username", Value: player.Username}, {Key: "slug", Value: player.Slug}, {Key: "rating", Value: player.Rating}, {Key: "score", Value: player.Score}})
+	if err != nil {
+		log.Println(err)
+	}
+	id := result.InsertedID.(primitive.ObjectID).Hex()
+	newPlayer := model.Player{
+		ID:       id,
+		Username: player.Username,
+		Slug:     player.Slug,
+		Rating:   player.Rating,
+		Score:    player.Score,
+	}
+
+	return &newPlayer
 }

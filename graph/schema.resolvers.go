@@ -6,6 +6,9 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
+	"regexp"
+	"strings"
 
 	"github.com/moonlightfight/elo-backend/constants"
 	"github.com/moonlightfight/elo-backend/database"
@@ -14,7 +17,28 @@ import (
 )
 
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
-	panic(fmt.Errorf("not implemented"))
+	lowerName := strings.ToLower(input.Username)
+
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	re := strings.NewReplacer("_", "-", " ", "-")
+
+	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
+
+	slug := re.Replace(noSpecialChar)
+
+	player := model.Player{
+		Username: input.Username,
+		Rating:   1200,
+		Score:    0,
+		Slug:     slug,
+	}
+
+	return db.CreatePlayer(player), nil
 }
 
 func (r *mutationResolver) CreateAdmin(ctx context.Context, input model.NewAdmin) (*model.Admin, error) {
