@@ -14,6 +14,7 @@ import (
 	"github.com/moonlightfight/elo-backend/database"
 	"github.com/moonlightfight/elo-backend/graph/generated"
 	"github.com/moonlightfight/elo-backend/graph/model"
+	"github.com/moonlightfight/elo-backend/helpers"
 )
 
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
@@ -78,7 +79,26 @@ func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
 }
 
 func (r *queryResolver) TournamentFromAPI(ctx context.Context, input model.TournamentFromAPI) (*model.APIReturnedTournament, error) {
-	panic(fmt.Errorf("not implemented"))
+	if strings.Contains(input.URL, "challonge") {
+		var tournamentId string
+		var subDomain interface{}
+		if strings.Contains(input.URL, "https://challonge.com/") {
+			subDomain = nil
+			tournamentId = strings.Replace(input.URL, "https://challonge.com/", "", -1)
+		} else {
+			trunc := strings.Replace(input.URL, "https://", "", 1)
+			subDomain = strings.TrimRight(trunc, ".challonge.com")
+			tournamentId = strings.TrimLeft(input.URL, fmt.Sprintf("https://%s.challonge.com/", subDomain))
+		}
+		return helpers.GetChallongeBracket(tournamentId, subDomain), nil
+	} else if strings.Contains(input.URL, "smash") {
+		// trim the url down to the obscenely long event slug that IDK what Smash.gg was thinking when they created it
+		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
+		slug := re.Replace(input.URL)
+		return helpers.GetSmashBracket(slug), nil
+	} else {
+		return nil, fmt.Errorf("invalid bracket url %s", input.URL)
+	}
 }
 
 func (r *queryResolver) Player(ctx context.Context, input model.SinglePlayer) (*model.Player, error) {
