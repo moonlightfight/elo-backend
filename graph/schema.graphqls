@@ -115,6 +115,7 @@ type Match {
   winningPlayerEndingElo: Int!
   losingPlayerStartingElo: Int!
   losingPlayerEndingElo: Int!
+  tournamentId: Tournament
 }
 
 type Query {
@@ -127,6 +128,11 @@ type Query {
   player(input: SinglePlayer!): Player!
   team(input: SingleTeam!): Team!
   tournament(input: SingleTournament!): Tournament!
+  character(input: SingleCharacter!): Character
+}
+
+input SingleCharacter {
+  id: ID!
 }
 
 input NewPlayer {
@@ -206,4 +212,5 @@ type Mutation {
   loginAdmin(input: LoginAdmin!): Jwt!
   createTeam(input: NewTeam!): Team!
   createTournament(input: NewTournament!): Tournament!
+  createMatch(input: NewMatchResult!): Match!
 }

@@ -9,6 +9,7 @@ import (
 	"log"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/moonlightfight/elo-backend/constants"
 	"github.com/moonlightfight/elo-backend/database"
@@ -55,6 +56,89 @@ func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) 
 }
 
 func (r *mutationResolver) CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error) {
+	lowerName := strings.ToLower(input.Name)
+
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	re := strings.NewReplacer("_", "-", " ", "-")
+
+	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
+
+	slug := re.Replace(noSpecialChar)
+
+	tournament := model.Tournament{
+		Name:       input.Name,
+		Slug:       slug,
+		Location:   input.Location,
+		BracketURL: input.BracketURL,
+		NumPlayers: input.NumPlayers,
+		Replay:     input.Replay,
+		Date:       input.Date,
+		DateAdded:  time.Now(),
+	}
+
+	players := []model.Player{}
+
+	for _, player := range input.Results {
+		returnedPlayer := db.GetPlayerByID(player.Player)
+		points := helpers.CalculateTournamentPoints(input.NumPlayers, player.Place)
+		returnedPlayer.Score += points
+		characters := []*model.Character{}
+		for _, character := range player.CharactersUsed {
+			returnedCharacter := db.GetCharacter(character)
+			characters = append(characters, returnedCharacter)
+		}
+		tournamentResult := model.TournamentResult{
+			Place:          player.Place,
+			Player:         returnedPlayer,
+			Points:         points,
+			CharactersUsed: characters,
+		}
+		players = append(players, *returnedPlayer)
+		tournament.Results = append(tournament.Results, &tournamentResult)
+	}
+
+	for _, match := range input.Matches {
+		var winnerIndex int
+		var loserIndex int
+		for i, player := range players {
+			if match.WinnerID == player.ID {
+				winnerIndex = i
+				break
+			}
+		}
+		for i, player := range players {
+			if match.LoserID == player.ID {
+				loserIndex = i
+				break
+			}
+		}
+		winnerStartingElo := players[winnerIndex].Rating
+		loserStartingElo := players[loserIndex].Rating
+		winnerEndingElo, loserEndingElo := helpers.CalculateElo(winnerStartingElo, loserStartingElo)
+		players[winnerIndex].Rating = winnerEndingElo
+		players[loserIndex].Rating = loserEndingElo
+		matchFormatted := model.Match{
+			WinningPlayer:            &players[winnerIndex],
+			LosingPlayer:             &players[loserIndex],
+			WinningPlayerStartingElo: winnerStartingElo,
+			LosingPlayerStartingElo:  loserStartingElo,
+			WinningPlayerEndingElo:   winnerEndingElo,
+			LosingPlayerEndingElo:    loserEndingElo,
+			Date:                     match.Date,
+		}
+		returnedMatch := db.InsertMatch(matchFormatted)
+		tournament.Matches = append(tournament.Matches, returnedMatch)
+	}
+
+	return db.InsertTournament(tournament), nil
+}
+
+func (r *mutationResolver) CreateMatch(ctx context.Context, input model.NewMatchResult) (*model.Match, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
@@ -112,6 +196,10 @@ func (r *queryResolver) Team(ctx context.Context, input model.SingleTeam) (*mode
 
 func (r *queryResolver) Tournament(ctx context.Context, input model.SingleTournament) (*model.Tournament, error) {
 	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Character(ctx context.Context, input model.SingleCharacter) (*model.Character, error) {
+	return db.GetCharacter(input.ID), nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

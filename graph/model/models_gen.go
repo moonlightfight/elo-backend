@@ -57,14 +57,15 @@ type LoginAdmin struct {
 }
 
 type Match struct {
-	ID                       string    `json:"_id"`
-	WinningPlayer            *Player   `json:"winningPlayer"`
-	LosingPlayer             *Player   `json:"losingPlayer"`
-	Date                     time.Time `json:"date"`
-	WinningPlayerStartingElo int       `json:"winningPlayerStartingElo"`
-	WinningPlayerEndingElo   int       `json:"winningPlayerEndingElo"`
-	LosingPlayerStartingElo  int       `json:"losingPlayerStartingElo"`
-	LosingPlayerEndingElo    int       `json:"losingPlayerEndingElo"`
+	ID                       string      `json:"_id"`
+	WinningPlayer            *Player     `json:"winningPlayer"`
+	LosingPlayer             *Player     `json:"losingPlayer"`
+	Date                     time.Time   `json:"date"`
+	WinningPlayerStartingElo int         `json:"winningPlayerStartingElo"`
+	WinningPlayerEndingElo   int         `json:"winningPlayerEndingElo"`
+	LosingPlayerStartingElo  int         `json:"losingPlayerStartingElo"`
+	LosingPlayerEndingElo    int         `json:"losingPlayerEndingElo"`
+	TournamentID             *Tournament `json:"tournamentId"`
 }
 
 type NewAdmin struct {
@@ -135,6 +136,10 @@ type Player struct {
 	Controller    *string       `json:"controller"`
 	Tournaments   []*Tournament `json:"tournaments"`
 	Matches       []*Match      `json:"matches"`
+}
+
+type SingleCharacter struct {
+	ID string `json:"id"`
 }
 
 type SinglePlayer struct {

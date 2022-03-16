@@ -105,3 +105,57 @@ func (db *DB) CreatePlayer(player model.Player) *model.Player {
 
 	return &player
 }
+
+func (db *DB) InsertMatch(match model.Match) *model.Match {
+	matchColl := db.client.Database(databaseName).Collection("Match")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := matchColl.InsertOne(ctx, match)
+	if err != nil {
+		log.Println(err)
+	}
+	id := result.InsertedID.(primitive.ObjectID).Hex()
+	match.ID = id
+	return &match
+}
+
+func (db *DB) InsertTournament(tournament model.Tournament) *model.Tournament {
+	tournamentColl := db.client.Database(databaseName).Collection("Tournament")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := tournamentColl.InsertOne(ctx, tournament)
+	if err != nil {
+		log.Println(err)
+	}
+	id := result.InsertedID.(primitive.ObjectID).Hex()
+	tournament.ID = id
+	return &tournament
+}
+
+func (db *DB) GetPlayerByID(playerID string) *model.Player {
+	objectID, err := primitive.ObjectIDFromHex(playerID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	playerColl := db.client.Database(databaseName).Collection("Player")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result := playerColl.FindOne(ctx, bson.M{"_id": objectID})
+	var player model.Player
+	result.Decode(player)
+	return &player
+}
+
+func (db *DB) GetCharacter(characterId string) *model.Character {
+	objectId, err := primitive.ObjectIDFromHex(characterId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	characterColl := db.client.Database(databaseName).Collection("Character")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result := characterColl.FindOne(ctx, bson.M{"_id": objectId})
+	var character model.Character
+	result.Decode(character)
+	return &character
+}

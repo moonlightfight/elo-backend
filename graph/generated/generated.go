@@ -92,6 +92,7 @@ type ComplexityRoot struct {
 		LosingPlayer             func(childComplexity int) int
 		LosingPlayerEndingElo    func(childComplexity int) int
 		LosingPlayerStartingElo  func(childComplexity int) int
+		TournamentID             func(childComplexity int) int
 		WinningPlayer            func(childComplexity int) int
 		WinningPlayerEndingElo   func(childComplexity int) int
 		WinningPlayerStartingElo func(childComplexity int) int
@@ -99,6 +100,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateAdmin      func(childComplexity int, input model.NewAdmin) int
+		CreateMatch      func(childComplexity int, input model.NewMatchResult) int
 		CreatePlayer     func(childComplexity int, input model.NewPlayer) int
 		CreateTeam       func(childComplexity int, input model.NewTeam) int
 		CreateTournament func(childComplexity int, input model.NewTournament) int
@@ -126,6 +128,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Character         func(childComplexity int, input model.SingleCharacter) int
 		Characters        func(childComplexity int) int
 		Matches           func(childComplexity int) int
 		Player            func(childComplexity int, input model.SinglePlayer) int
@@ -177,6 +180,7 @@ type MutationResolver interface {
 	LoginAdmin(ctx context.Context, input model.LoginAdmin) (*model.Jwt, error)
 	CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
 	CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error)
+	CreateMatch(ctx context.Context, input model.NewMatchResult) (*model.Match, error)
 }
 type QueryResolver interface {
 	Players(ctx context.Context) ([]*model.Player, error)
@@ -188,6 +192,7 @@ type QueryResolver interface {
 	Player(ctx context.Context, input model.SinglePlayer) (*model.Player, error)
 	Team(ctx context.Context, input model.SingleTeam) (*model.Team, error)
 	Tournament(ctx context.Context, input model.SingleTournament) (*model.Tournament, error)
+	Character(ctx context.Context, input model.SingleCharacter) (*model.Character, error)
 }
 
 type executableSchema struct {
@@ -408,6 +413,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Match.LosingPlayerStartingElo(childComplexity), true
 
+	case "Match.tournamentId":
+		if e.complexity.Match.TournamentID == nil {
+			break
+		}
+
+		return e.complexity.Match.TournamentID(childComplexity), true
+
 	case "Match.winningPlayer":
 		if e.complexity.Match.WinningPlayer == nil {
 			break
@@ -440,6 +452,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateAdmin(childComplexity, args["input"].(model.NewAdmin)), true
+
+	case "Mutation.createMatch":
+		if e.complexity.Mutation.CreateMatch == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createMatch_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateMatch(childComplexity, args["input"].(model.NewMatchResult)), true
 
 	case "Mutation.createPlayer":
 		if e.complexity.Mutation.CreatePlayer == nil {
@@ -607,6 +631,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Player.Username(childComplexity), true
+
+	case "Query.character":
+		if e.complexity.Query.Character == nil {
+			break
+		}
+
+		args, err := ec.field_Query_character_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Character(childComplexity, args["input"].(model.SingleCharacter)), true
 
 	case "Query.characters":
 		if e.complexity.Query.Characters == nil {
@@ -1040,6 +1076,7 @@ type Match {
   winningPlayerEndingElo: Int!
   losingPlayerStartingElo: Int!
   losingPlayerEndingElo: Int!
+  tournamentId: Tournament
 }
 
 type Query {
@@ -1052,6 +1089,11 @@ type Query {
   player(input: SinglePlayer!): Player!
   team(input: SingleTeam!): Team!
   tournament(input: SingleTournament!): Tournament!
+  character(input: SingleCharacter!): Character
+}
+
+input SingleCharacter {
+  id: ID!
 }
 
 input NewPlayer {
@@ -1131,6 +1173,7 @@ type Mutation {
   loginAdmin(input: LoginAdmin!): Jwt!
   createTeam(input: NewTeam!): Team!
   createTournament(input: NewTournament!): Tournament!
+  createMatch(input: NewMatchResult!): Match!
 }
 `, BuiltIn: false},
 }
@@ -1147,6 +1190,21 @@ func (ec *executionContext) field_Mutation_createAdmin_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewAdmin2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewAdmin(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createMatch_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewMatchResult
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewMatchResult2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResult(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1227,6 +1285,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_character_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SingleCharacter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSingleCharacter2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleCharacter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -2448,6 +2521,38 @@ func (ec *executionContext) _Match_losingPlayerEndingElo(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Match_tournamentId(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TournamentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Tournament)
+	fc.Result = res
+	return ec.marshalOTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createPlayer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2656,6 +2761,48 @@ func (ec *executionContext) _Mutation_createTournament(ctx context.Context, fiel
 	res := resTmp.(*model.Tournament)
 	fc.Result = res
 	return ec.marshalNTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createMatch(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createMatch_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateMatch(rctx, args["input"].(model.NewMatchResult))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Match)
+	fc.Result = res
+	return ec.marshalNMatch2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Player__id(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
@@ -3564,6 +3711,45 @@ func (ec *executionContext) _Query_tournament(ctx context.Context, field graphql
 	res := resTmp.(*model.Tournament)
 	fc.Result = res
 	return ec.marshalNTournament2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTournament(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_character(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_character_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Character(rctx, args["input"].(model.SingleCharacter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Character)
+	fc.Result = res
+	return ec.marshalOCharacter2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐCharacter(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6026,6 +6212,29 @@ func (ec *executionContext) unmarshalInputNewTournamentResult(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSingleCharacter(ctx context.Context, obj interface{}) (model.SingleCharacter, error) {
+	var it model.SingleCharacter
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSinglePlayer(ctx context.Context, obj interface{}) (model.SinglePlayer, error) {
 	var it model.SinglePlayer
 	asMap := map[string]interface{}{}
@@ -6582,6 +6791,13 @@ func (ec *executionContext) _Match(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "tournamentId":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Match_tournamentId(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6655,6 +6871,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createTournament":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createTournament(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createMatch":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createMatch(ctx, field)
 			}
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
@@ -7050,6 +7276,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "character":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_character(ctx, field)
 				return res
 			}
 
@@ -8086,6 +8332,10 @@ func (ec *executionContext) unmarshalNLoginAdmin2githubᚗcomᚋmoonlightfight�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNMatch2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx context.Context, sel ast.SelectionSet, v model.Match) graphql.Marshaler {
+	return ec._Match(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNMatch2ᚕᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx context.Context, sel ast.SelectionSet, v []*model.Match) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -8180,6 +8430,11 @@ func (ec *executionContext) marshalNMatch2ᚖgithubᚗcomᚋmoonlightfightᚋelo
 
 func (ec *executionContext) unmarshalNNewAdmin2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewAdmin(ctx context.Context, v interface{}) (model.NewAdmin, error) {
 	res, err := ec.unmarshalInputNewAdmin(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNNewMatchResult2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐNewMatchResult(ctx context.Context, v interface{}) (model.NewMatchResult, error) {
+	res, err := ec.unmarshalInputNewMatchResult(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8298,6 +8553,11 @@ func (ec *executionContext) marshalNPlayer2ᚖgithubᚗcomᚋmoonlightfightᚋel
 		return graphql.Null
 	}
 	return ec._Player(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSingleCharacter2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSingleCharacter(ctx context.Context, v interface{}) (model.SingleCharacter, error) {
+	res, err := ec.unmarshalInputSingleCharacter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNSinglePlayer2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐSinglePlayer(ctx context.Context, v interface{}) (model.SinglePlayer, error) {
