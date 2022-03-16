@@ -96,18 +96,12 @@ func (db *DB) CreatePlayer(player model.Player) *model.Player {
 	playerColl := db.client.Database(databaseName).Collection("Player")
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	result, err := playerColl.InsertOne(ctx, bson.D{{Key: "username", Value: player.Username}, {Key: "slug", Value: player.Slug}, {Key: "rating", Value: player.Rating}, {Key: "score", Value: player.Score}})
+	result, err := playerColl.InsertOne(ctx, player)
 	if err != nil {
 		log.Println(err)
 	}
 	id := result.InsertedID.(primitive.ObjectID).Hex()
-	newPlayer := model.Player{
-		ID:       id,
-		Username: player.Username,
-		Slug:     player.Slug,
-		Rating:   player.Rating,
-		Score:    player.Score,
-	}
+	player.ID = id
 
-	return &newPlayer
+	return &player
 }
