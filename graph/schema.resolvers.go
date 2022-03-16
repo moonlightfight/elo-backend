@@ -86,13 +86,14 @@ func (r *queryResolver) TournamentFromAPI(ctx context.Context, input model.Tourn
 			subDomain = nil
 			tournamentId = strings.Replace(input.URL, "https://challonge.com/", "", -1)
 		} else {
-			trunc := strings.Replace(input.URL, "https://", "", 1)
-			subDomain = strings.TrimRight(trunc, ".challonge.com")
-			tournamentId = strings.TrimLeft(input.URL, fmt.Sprintf("https://%s.challonge.com/", subDomain))
+			re := strings.NewReplacer("https://", "", ".challonge.com", "")
+			trunc := re.Replace(input.URL)
+			subDomain = strings.TrimRight(trunc, "/")
+			tournamentId = strings.TrimLeft(input.URL, "/")
 		}
 		return helpers.GetChallongeBracket(tournamentId, subDomain), nil
 	} else if strings.Contains(input.URL, "smash") {
-		// trim the url down to the obscenely long event slug that IDK what Smash.gg was thinking when they created it
+		// trim the url down to the obscenely long event slug bc fucking smashers
 		re := strings.NewReplacer("https://smash.gg/", "", "/overview", "")
 		slug := re.Replace(input.URL)
 		return helpers.GetSmashBracket(slug), nil
