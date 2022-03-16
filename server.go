@@ -1,60 +1,29 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+	"os"
 
-	"github.com/gorilla/mux"
-	c "github.com/moonlightfight/elo-backend/config"
-	"github.com/moonlightfight/elo-backend/routes/admin"
-	"github.com/moonlightfight/elo-backend/routes/character"
-	"github.com/moonlightfight/elo-backend/routes/player"
-	"github.com/moonlightfight/elo-backend/routes/tournament"
-	"github.com/spf13/viper"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/moonlightfight/elo-backend/graph"
+	"github.com/moonlightfight/elo-backend/graph/generated"
 )
 
+const defaultPort = "8080"
+
 func main() {
-	// Set the file name of the configurations file
-	viper.SetConfigName("config")
-
-	// Set the path to look for the configurations file
-	viper.AddConfigPath(".")
-
-	// Enable VIPER to read Environment Variables
-	viper.AutomaticEnv()
-
-	viper.SetConfigType("yml")
-	var configuration c.Configurations
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
 	}
 
-	err := viper.Unmarshal(&configuration)
-	if err != nil {
-		fmt.Printf("Unable to decode into struct, %v", err)
-	}
-	port := fmt.Sprintf(":%d", configuration.Server.Port)
-	router := mux.NewRouter()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	// Admin routes
-	router.HandleFunc("/api/admin", admin.CreateAdminEndpoint).Methods("POST")
-	router.HandleFunc("/api/admin/login", admin.AdminLoginEndpoint).Methods("POST")
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
 
-	// Tournament routes
-	router.HandleFunc("/api/tournament/getfromweb", tournament.GetTournamentData).Queries("url", "{url}").Methods("GET")
-	router.HandleFunc("/api/tournament", tournament.CreateTournament).Methods("POST")
-
-	// Character routes
-	router.HandleFunc("/api/character", character.CreateCharacterEndpoint).Methods("POST")
-	router.HandleFunc("/api/character", character.GetCharactersEndpoint).Methods("GET")
-
-	// Player routes
-	router.HandleFunc("/api/player", player.CreatePlayerEndpoint).Methods("POST")
-	router.HandleFunc("/api/players", player.GetPlayersEndPoint).Methods("GET")
-	router.HandleFunc("/api/player", player.GetPlayerEndPoint).Queries("playerId", "{playerId}").Methods("GET")
-
-	// run the server
-	fmt.Printf("server listening on http://localhost%v\n", port)
-	http.ListenAndServe(port, router)
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

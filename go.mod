@@ -1,21 +1,28 @@
 module github.com/moonlightfight/elo-backend
 
-go 1.16
+go 1.17
 
 require (
-	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/auth0/go-jwt-middleware v1.0.0 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fsnotify/fsnotify v1.4.7 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
-	github.com/gorilla/mux v1.8.0
-	github.com/json-iterator/go v1.1.9 // indirect
-	github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86 // indirect
-	github.com/neelance/sourcemap v0.0.0-20200213170602-2833bce08e4c // indirect
-	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749 // indirect
-	github.com/smartystreets/assertions v1.1.0 // indirect
-	github.com/spf13/viper v1.7.1
-	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
-	go.mongodb.org/mongo-driver v1.5.2
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	github.com/99designs/gqlgen v0.17.1
+	github.com/joho/godotenv v1.4.0
+	github.com/vektah/gqlparser/v2 v2.4.0
+	go.mongodb.org/mongo-driver v1.8.3
+)
+
+require (
+	github.com/agnivade/levenshtein v1.1.0 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/golang/snappy v0.0.1 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/hashicorp/golang-lru v0.5.0 // indirect
+	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/mitchellh/mapstructure v1.2.3 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
+	github.com/xdg-go/scram v1.0.2 // indirect
+	github.com/xdg-go/stringprep v1.0.2 // indirect
+	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/text v0.3.7 // indirect
 )

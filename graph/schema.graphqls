@@ -1,0 +1,216 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+
+enum BracketType {
+  DOUBLE_ELIM
+  SINGLE_ELIM
+  SWISS
+  ROUND_ROBIN
+}
+
+type Admin {
+  _id: ID!
+  username: String!
+  email: String!
+  password: String!
+}
+
+type Player {
+  _id: ID!
+  slug: String!
+  username: String!
+  rating: Int!
+  score: Int!
+  country: String
+  twitter: String
+  twitch: String
+  instagram: String
+  realName: String
+  team: Team
+  mainCharacter: Character
+  subCharacters: [Character]
+  picture: String
+  controller: String
+  tournaments: [Tournament]!
+  matches: [Match]!
+}
+
+type Character {
+  _id: ID!
+  name: String!
+  imageLink: String!
+}
+
+type Jwt {
+  jwt: String!
+}
+
+type Team {
+  _id: ID!
+  slug: String!
+  name: String!
+  abbreviation: String!
+  logo: String
+  twitter: String
+  website: String
+}
+
+type Tournament {
+  _id: ID!
+  name: String!
+  slug: String!
+  location: String
+  bracketUrl: String
+  noBracket: Boolean!
+  numPlayers: Int!
+  date: Time!
+  dateAdded: Time!
+  replay: String
+  results: [TournamentResult!]!
+  matches: [Match!]!
+  bracketType: BracketType!
+}
+
+type TournamentResult {
+  place: Int!
+  points: Int!
+  player: Player!
+  charactersUsed: [Character]
+}
+
+type ApiReturnedTournament {
+  title: String!
+  numPlayers: Int!
+  tournamentDate: Time!
+  players: [ApiReturnedPlayer!]!
+  matches: [ApiReturnedMatch!]!
+  bracketType: BracketType!
+}
+
+type ApiReturnedPlayer {
+  id: Int!
+  name: String!
+  place: Int!
+}
+
+type ApiReturnedMatch {
+  winnerId: Int!
+  loserId: Int!
+  winnerName: String!
+  loserName: String!
+  winnerScore: Int!
+  loserScore: Int!
+  matchDate: Time!
+}
+
+type Match {
+  _id: ID!
+  winningPlayer: Player!
+  losingPlayer: Player!
+  date: Time!
+  winningPlayerStartingElo: Int!
+  winningPlayerEndingElo: Int!
+  losingPlayerStartingElo: Int!
+  losingPlayerEndingElo: Int!
+  tournamentId: Tournament
+}
+
+type Query {
+  players: [Player!]!
+  characters: [Character!]!
+  tournaments: [Tournament!]!
+  matches: [Match!]!
+  teams: [Team!]!
+  tournamentFromApi(input: TournamentFromApi!): ApiReturnedTournament!
+  player(input: SinglePlayer!): Player!
+  team(input: SingleTeam!): Team!
+  tournament(input: SingleTournament!): Tournament!
+  character(input: SingleCharacter!): Character
+}
+
+input SingleCharacter {
+  id: ID!
+}
+
+input NewPlayer {
+  username: String!
+  rating: Int = 1200
+  score: Int = 0
+}
+
+input NewTournament {
+  name: String!
+  slug: String!
+  location: String
+  bracketUrl: String
+  noBracket: Boolean!
+  numPlayers: Int!
+  date: Time!
+  dateAdded: Time!
+  replay: String
+  results: [NewTournamentResult!]!
+  matches: [NewMatchResult!]!
+  bracketType: BracketType!
+}
+
+input NewMatchResult {
+  winnerId: ID!
+  loserId: ID!
+  winnerScore: Int!
+  loserScore: Int!
+  date: Time!
+}
+
+input NewTournamentResult {
+  place: Int!
+  points: Int!
+  player: ID!
+  charactersUsed: [ID!]!
+}
+
+input SinglePlayer {
+  slug: String!
+}
+
+input SingleTournament {
+  slug: String!
+}
+
+input SingleTeam {
+  slug: String!
+}
+
+input NewAdmin {
+  username: String!
+  email: String!
+}
+
+input LoginAdmin {
+  email: String!
+  password: String!
+}
+
+input NewTeam {
+  slug: String!
+  name: String!
+  abbreviation: String!
+  logo: String
+  twitter: String
+  website: String
+}
+
+input TournamentFromApi {
+  url: String!
+}
+
+type Mutation {
+  createPlayer(input: NewPlayer!): Player!
+  createAdmin(input: NewAdmin!): Admin!
+  loginAdmin(input: LoginAdmin!): Jwt!
+  createTeam(input: NewTeam!): Team!
+  createTournament(input: NewTournament!): Tournament!
+  createMatch(input: NewMatchResult!): Match!
+}
