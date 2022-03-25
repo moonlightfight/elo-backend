@@ -18,7 +18,7 @@ import (
 )
 
 func FindFirstMatchAfterTournament(matches []*model.Match, date time.Time) int {
-	var matchIndex int
+	matchIndex := -1
 	for index, match := range matches {
 		if match.Date.Unix() > date.Unix() {
 			matchIndex = index
