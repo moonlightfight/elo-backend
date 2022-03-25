@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/moonlightfight/elo-backend/constants"
 	"github.com/moonlightfight/elo-backend/graph"
 	"github.com/moonlightfight/elo-backend/graph/generated"
 )
@@ -14,7 +14,7 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	port := os.Getenv("PORT")
+	port := constants.GetEnvVar("PORT")
 	if port == "" {
 		port = defaultPort
 	}
