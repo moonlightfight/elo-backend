@@ -56,6 +56,10 @@ func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) 
 }
 
 func (r *mutationResolver) CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error) {
+	storedMatches := db.GetMatches()
+
+	nextTournamentMatchInDb := helpers.FindFirstMatchAfterTournament(storedMatches, input.Date)
+
 	lowerName := strings.ToLower(input.Name)
 
 	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
