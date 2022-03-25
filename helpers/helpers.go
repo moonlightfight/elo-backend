@@ -17,6 +17,17 @@ import (
 	"github.com/moonlightfight/elo-backend/types"
 )
 
+func FindFirstMatchAfterTournament(matches []*model.Match, date time.Time) int {
+	var matchIndex int
+	for index, match := range matches {
+		if match.Date.Unix() > date.Unix() {
+			matchIndex = index
+			break
+		}
+	}
+	return matchIndex
+}
+
 func GetChallongeBracket(tournamentId string, subDomain interface{}) *model.APIReturnedTournament {
 	apiKey := constants.GetEnvVar("CHALLONGE_API_KEY")
 	var apiUrl string
