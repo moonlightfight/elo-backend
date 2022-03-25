@@ -155,7 +155,7 @@ func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, e
 }
 
 func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
-	panic(fmt.Errorf("not implemented"))
+	return db.GetMatches(), nil
 }
 
 func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {

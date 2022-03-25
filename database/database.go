@@ -159,3 +159,24 @@ func (db *DB) GetCharacter(characterId string) *model.Character {
 	result.Decode(character)
 	return &character
 }
+
+func (db *DB) GetMatches() []*model.Match {
+	matchColl := db.client.Database(databaseName).Collection("Match")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	cursor, err := matchColl.Find(ctx, bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	var matches []*model.Match
+
+	for cursor.Next(ctx) {
+		var match *model.Match
+
+		cursor.Decode(&match)
+
+		matches = append(matches, match)
+	}
+
+	return matches
+}
