@@ -89,6 +89,9 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 
 	for _, player := range input.Results {
 		returnedPlayer := db.GetPlayerByID(player.Player)
+		if returnedPlayer.Matches == nil {
+			returnedPlayer.Matches = []*model.Match{}
+		}
 		points := helpers.CalculateTournamentPoints(input.NumPlayers, player.Place)
 		returnedPlayer.Score += points
 		characters := []*model.Character{}
@@ -136,7 +139,34 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 			Date:                     match.Date,
 		}
 		returnedMatch := db.InsertMatch(matchFormatted)
+		players[winnerIndex].Matches = append(players[winnerIndex].Matches, returnedMatch)
+		players[loserIndex].Matches = append(players[loserIndex].Matches, returnedMatch)
 		tournament.Matches = append(tournament.Matches, returnedMatch)
+	}
+
+	for nextTournamentMatchInDb < len(storedMatches) {
+		winningPlayerId, losingPlayerId := storedMatches[nextTournamentMatchInDb].WinningPlayer.ID, storedMatches[nextTournamentMatchInDb].LosingPlayer.ID
+		winningPlayerIndex, losingPlayerIndex := -1, -1
+		for index, player := range players {
+			if winningPlayerId == player.ID {
+				winningPlayerIndex = index
+			}
+			if losingPlayerId == player.ID {
+				losingPlayerIndex = index
+			}
+			if losingPlayerIndex > -1 && winningPlayerIndex > -1 {
+				break
+			}
+		}
+		if winningPlayerIndex == -1 {
+			players = append(players, *storedMatches[nextTournamentMatchInDb].WinningPlayer)
+			winningPlayerIndex = len(players) - 1
+		}
+		if losingPlayerIndex == -1 {
+			players = append(players, *storedMatches[nextTournamentMatchInDb].LosingPlayer)
+			losingPlayerIndex = len(players) - 1
+		}
+		nextTournamentMatchInDb++
 	}
 
 	return db.InsertTournament(tournament), nil
