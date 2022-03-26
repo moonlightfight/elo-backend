@@ -220,7 +220,7 @@ func (r *queryResolver) Characters(ctx context.Context) ([]*model.Character, err
 }
 
 func (r *queryResolver) Tournaments(ctx context.Context) ([]*model.Tournament, error) {
-	panic(fmt.Errorf("not implemented"))
+	return db.GetTournaments(), nil
 }
 
 func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {

@@ -92,6 +92,28 @@ func (db *DB) GetCharacters() []*model.Character {
 	return characters
 }
 
+func (db *DB) GetTournaments() []*model.Tournament {
+	tournamentsColl := db.client.Database(databaseName).Collection("Tournament")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	cursor, err := tournamentsColl.Find(ctx, bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var tournaments []*model.Tournament
+
+	for cursor.Next(ctx) {
+		var tournament *model.Tournament
+
+		cursor.Decode(&tournament)
+
+		tournaments = append(tournaments, tournament)
+	}
+
+	return tournaments
+}
+
 func (db *DB) CreatePlayer(player model.Player) *model.Player {
 	playerColl := db.client.Database(databaseName).Collection("Player")
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
