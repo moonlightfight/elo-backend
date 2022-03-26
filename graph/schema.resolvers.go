@@ -105,6 +105,20 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 			Points:         points,
 			CharactersUsed: characters,
 		}
+		if nextTournamentMatchInDb != -1 && len(returnedPlayer.Matches) != 0 {
+			moveBackwards := nextTournamentMatchInDb
+			for moveBackwards > -1 {
+				if storedMatches[moveBackwards].WinningPlayer.ID == returnedPlayer.ID {
+					returnedPlayer.Rating = storedMatches[moveBackwards].WinningPlayerEndingElo
+					break
+				}
+				if storedMatches[moveBackwards].LosingPlayer.ID == returnedPlayer.ID {
+					returnedPlayer.Rating = storedMatches[moveBackwards].LosingPlayerEndingElo
+					break
+				}
+				moveBackwards -= 1
+			}
+		}
 		players = append(players, *returnedPlayer)
 		tournament.Results = append(tournament.Results, &tournamentResult)
 	}
@@ -144,32 +158,53 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 		tournament.Matches = append(tournament.Matches, returnedMatch)
 	}
 
-	for nextTournamentMatchInDb < len(storedMatches) {
-		winningPlayerId, losingPlayerId := storedMatches[nextTournamentMatchInDb].WinningPlayer.ID, storedMatches[nextTournamentMatchInDb].LosingPlayer.ID
-		winningPlayerIndex, losingPlayerIndex := -1, -1
-		for index, player := range players {
-			if winningPlayerId == player.ID {
-				winningPlayerIndex = index
-			}
-			if losingPlayerId == player.ID {
-				losingPlayerIndex = index
-			}
-			if losingPlayerIndex > -1 && winningPlayerIndex > -1 {
-				break
-			}
-		}
-		if winningPlayerIndex == -1 {
-			players = append(players, *storedMatches[nextTournamentMatchInDb].WinningPlayer)
-			winningPlayerIndex = len(players) - 1
-		}
-		if losingPlayerIndex == -1 {
-			players = append(players, *storedMatches[nextTournamentMatchInDb].LosingPlayer)
-			losingPlayerIndex = len(players) - 1
-		}
-		nextTournamentMatchInDb++
+	returnedTournament := db.InsertTournament(tournament)
+
+	for _, player := range players {
+		player.Tournaments = append(player.Tournaments, returnedTournament)
 	}
 
-	return db.InsertTournament(tournament), nil
+	if nextTournamentMatchInDb != -1 {
+		for nextTournamentMatchInDb < len(storedMatches) {
+			winningPlayerId, losingPlayerId := storedMatches[nextTournamentMatchInDb].WinningPlayer.ID, storedMatches[nextTournamentMatchInDb].LosingPlayer.ID
+			winningPlayerIndex, losingPlayerIndex := -1, -1
+			for index, player := range players {
+				if winningPlayerId == player.ID {
+					winningPlayerIndex = index
+				}
+				if losingPlayerId == player.ID {
+					losingPlayerIndex = index
+				}
+				if losingPlayerIndex > -1 && winningPlayerIndex > -1 {
+					break
+				}
+			}
+			if winningPlayerIndex != -1 || losingPlayerIndex != -1 {
+				if winningPlayerIndex == -1 {
+					players = append(players, *storedMatches[nextTournamentMatchInDb].WinningPlayer)
+					winningPlayerIndex = len(players) - 1
+					players[winningPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].WinningPlayerStartingElo
+				} else {
+					storedMatches[nextTournamentMatchInDb].WinningPlayerStartingElo = players[winningPlayerIndex].Rating
+				}
+				if losingPlayerIndex == -1 {
+					players = append(players, *storedMatches[nextTournamentMatchInDb].LosingPlayer)
+					losingPlayerIndex = len(players) - 1
+					players[losingPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].LosingPlayerStartingElo
+				} else {
+					storedMatches[nextTournamentMatchInDb].LosingPlayerStartingElo = players[losingPlayerIndex].Rating
+				}
+				storedMatches[nextTournamentMatchInDb].WinningPlayerEndingElo, storedMatches[nextTournamentMatchInDb].LosingPlayerEndingElo = helpers.CalculateElo(players[winningPlayerIndex].Rating, players[losingPlayerIndex].Rating)
+				players[winningPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].WinningPlayerEndingElo
+				players[losingPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].LosingPlayerEndingElo
+				// TODO: Update match in DB
+			}
+			nextTournamentMatchInDb++
+		}
+	}
+
+	// TODO: update players
+	return returnedTournament, nil
 }
 
 func (r *mutationResolver) CreateMatch(ctx context.Context, input model.NewMatchResult) (*model.Match, error) {
