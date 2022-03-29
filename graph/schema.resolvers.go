@@ -42,7 +42,7 @@ func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) 
 
 	team := model.Team{
 		Name: input.Name,
-		Slug: slug
+		Slug: slug,
 	}
 
 	return db.InsertTeam(team), nil
@@ -196,6 +196,10 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 }
 
 func (r *mutationResolver) CreateMatch(ctx context.Context, input model.NewMatchResult) (*model.Match, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) UpdateTeam(ctx context.Context, input model.UpdatedTeam) (*model.Team, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

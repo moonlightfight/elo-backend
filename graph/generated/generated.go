@@ -108,6 +108,7 @@ type ComplexityRoot struct {
 		CreateTeam       func(childComplexity int, input model.NewTeam) int
 		CreateTournament func(childComplexity int, input model.NewTournament) int
 		LoginAdmin       func(childComplexity int, input model.LoginAdmin) int
+		UpdateTeam       func(childComplexity int, input model.UpdatedTeam) int
 	}
 
 	Player struct {
@@ -184,6 +185,7 @@ type MutationResolver interface {
 	CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error)
 	CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error)
 	CreateMatch(ctx context.Context, input model.NewMatchResult) (*model.Match, error)
+	UpdateTeam(ctx context.Context, input model.UpdatedTeam) (*model.Team, error)
 }
 type QueryResolver interface {
 	Players(ctx context.Context) ([]*model.Player, error)
@@ -536,6 +538,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LoginAdmin(childComplexity, args["input"].(model.LoginAdmin)), true
+
+	case "Mutation.updateTeam":
+		if e.complexity.Mutation.UpdateTeam == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTeam_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTeam(childComplexity, args["input"].(model.UpdatedTeam)), true
 
 	case "Player.controller":
 		if e.complexity.Player.Controller == nil {
@@ -1037,7 +1051,7 @@ type Team {
   _id: ID!
   slug: String!
   name: String!
-  abbreviation: String!
+  abbreviation: String
   logo: String
   twitter: String
   website: String
@@ -1186,6 +1200,15 @@ input NewTeam {
   name: String!
 }
 
+input UpdatedTeam {
+  _id: ID!
+  name: String
+  abbreviation: String
+  logo: String
+  twitter: String
+  website: String
+}
+
 input TournamentFromApi {
   url: String!
 }
@@ -1197,6 +1220,7 @@ type Mutation {
   createTeam(input: NewTeam!): Team!
   createTournament(input: NewTournament!): Tournament!
   createMatch(input: NewMatchResult!): Match!
+  updateTeam(input: UpdatedTeam!): Team!
 }
 `, BuiltIn: false},
 }
@@ -1288,6 +1312,21 @@ func (ec *executionContext) field_Mutation_loginAdmin_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNLoginAdmin2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐLoginAdmin(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTeam_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdatedTeam
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdatedTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐUpdatedTeam(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2927,6 +2966,48 @@ func (ec *executionContext) _Mutation_createMatch(ctx context.Context, field gra
 	return ec.marshalNMatch2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐMatch(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_updateTeam(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTeam_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTeam(rctx, args["input"].(model.UpdatedTeam))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Team)
+	fc.Result = res
+	return ec.marshalNTeam2ᚖgithubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐTeam(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Player__id(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4075,14 +4156,11 @@ func (ec *executionContext) _Team_abbreviation(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Team_logo(ctx context.Context, field graphql.CollectedField, obj *model.Team) (ret graphql.Marshaler) {
@@ -6417,6 +6495,69 @@ func (ec *executionContext) unmarshalInputTournamentFromApi(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdatedTeam(ctx context.Context, obj interface{}) (model.UpdatedTeam, error) {
+	var it model.UpdatedTeam
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "abbreviation":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("abbreviation"))
+			it.Abbreviation, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "logo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logo"))
+			it.Logo, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "twitter":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("twitter"))
+			it.Twitter, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "website":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("website"))
+			it.Website, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -7002,6 +7143,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "updateTeam":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateTeam(ctx, field)
+			}
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, innerFunc)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7492,9 +7643,6 @@ func (ec *executionContext) _Team(ctx context.Context, sel ast.SelectionSet, obj
 
 			out.Values[i] = innerFunc(ctx)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "logo":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Team_logo(ctx, field, obj)
@@ -8930,6 +9078,11 @@ func (ec *executionContext) marshalNTournamentResult2ᚖgithubᚗcomᚋmoonlight
 		return graphql.Null
 	}
 	return ec._TournamentResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpdatedTeam2githubᚗcomᚋmoonlightfightᚋeloᚑbackendᚋgraphᚋmodelᚐUpdatedTeam(ctx context.Context, v interface{}) (model.UpdatedTeam, error) {
+	res, err := ec.unmarshalInputUpdatedTeam(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

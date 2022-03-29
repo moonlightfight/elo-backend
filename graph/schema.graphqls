@@ -52,7 +52,7 @@ type Team {
   _id: ID!
   slug: String!
   name: String!
-  abbreviation: String!
+  abbreviation: String
   logo: String
   twitter: String
   website: String
@@ -201,6 +201,15 @@ input NewTeam {
   name: String!
 }
 
+input UpdatedTeam {
+  _id: ID!
+  name: String
+  abbreviation: String
+  logo: String
+  twitter: String
+  website: String
+}
+
 input TournamentFromApi {
   url: String!
 }
@@ -212,4 +221,5 @@ type Mutation {
   createTeam(input: NewTeam!): Team!
   createTournament(input: NewTournament!): Tournament!
   createMatch(input: NewMatchResult!): Match!
+  updateTeam(input: UpdatedTeam!): Team!
 }

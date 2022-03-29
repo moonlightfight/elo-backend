@@ -157,7 +157,7 @@ type Team struct {
 	ID           string  `json:"_id"`
 	Slug         string  `json:"slug"`
 	Name         string  `json:"name"`
-	Abbreviation string  `json:"abbreviation"`
+	Abbreviation *string `json:"abbreviation"`
 	Logo         *string `json:"logo"`
 	Twitter      *string `json:"twitter"`
 	Website      *string `json:"website"`
@@ -188,6 +188,15 @@ type TournamentResult struct {
 	Points         int          `json:"points"`
 	Player         *Player      `json:"player"`
 	CharactersUsed []*Character `json:"charactersUsed"`
+}
+
+type UpdatedTeam struct {
+	ID           string  `json:"_id"`
+	Name         *string `json:"name"`
+	Abbreviation *string `json:"abbreviation"`
+	Logo         *string `json:"logo"`
+	Twitter      *string `json:"twitter"`
+	Website      *string `json:"website"`
 }
 
 type BracketType string
