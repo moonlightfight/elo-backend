@@ -111,6 +111,9 @@ type Match {
   winningPlayer: Player!
   losingPlayer: Player!
   date: Time!
+  winnerScore: Int
+  loserScore: Int
+  isDisqualification: Boolean!
   winningPlayerStartingElo: Int!
   winningPlayerEndingElo: Int!
   losingPlayerStartingElo: Int!
@@ -159,8 +162,9 @@ input NewTournament {
 input NewMatchResult {
   winnerId: ID!
   loserId: ID!
-  winnerScore: Int!
-  loserScore: Int!
+  winnerScore: Int
+  loserScore: Int
+  isDisqualification: Boolean!
   date: Time!
 }
 

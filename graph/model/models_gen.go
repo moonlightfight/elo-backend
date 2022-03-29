@@ -61,6 +61,9 @@ type Match struct {
 	WinningPlayer            *Player     `json:"winningPlayer"`
 	LosingPlayer             *Player     `json:"losingPlayer"`
 	Date                     time.Time   `json:"date"`
+	WinnerScore              *int        `json:"winnerScore"`
+	LoserScore               *int        `json:"loserScore"`
+	IsDisqualification       bool        `json:"isDisqualification"`
 	WinningPlayerStartingElo int         `json:"winningPlayerStartingElo"`
 	WinningPlayerEndingElo   int         `json:"winningPlayerEndingElo"`
 	LosingPlayerStartingElo  int         `json:"losingPlayerStartingElo"`
@@ -74,11 +77,12 @@ type NewAdmin struct {
 }
 
 type NewMatchResult struct {
-	WinnerID    string    `json:"winnerId"`
-	LoserID     string    `json:"loserId"`
-	WinnerScore int       `json:"winnerScore"`
-	LoserScore  int       `json:"loserScore"`
-	Date        time.Time `json:"date"`
+	WinnerID           string    `json:"winnerId"`
+	LoserID            string    `json:"loserId"`
+	WinnerScore        *int      `json:"winnerScore"`
+	LoserScore         *int      `json:"loserScore"`
+	IsDisqualification bool      `json:"isDisqualification"`
+	Date               time.Time `json:"date"`
 }
 
 type NewPlayer struct {

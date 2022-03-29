@@ -89,10 +89,13 @@ type ComplexityRoot struct {
 	Match struct {
 		Date                     func(childComplexity int) int
 		ID                       func(childComplexity int) int
+		IsDisqualification       func(childComplexity int) int
+		LoserScore               func(childComplexity int) int
 		LosingPlayer             func(childComplexity int) int
 		LosingPlayerEndingElo    func(childComplexity int) int
 		LosingPlayerStartingElo  func(childComplexity int) int
 		TournamentID             func(childComplexity int) int
+		WinnerScore              func(childComplexity int) int
 		WinningPlayer            func(childComplexity int) int
 		WinningPlayerEndingElo   func(childComplexity int) int
 		WinningPlayerStartingElo func(childComplexity int) int
@@ -392,6 +395,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Match.ID(childComplexity), true
 
+	case "Match.isDisqualification":
+		if e.complexity.Match.IsDisqualification == nil {
+			break
+		}
+
+		return e.complexity.Match.IsDisqualification(childComplexity), true
+
+	case "Match.loserScore":
+		if e.complexity.Match.LoserScore == nil {
+			break
+		}
+
+		return e.complexity.Match.LoserScore(childComplexity), true
+
 	case "Match.losingPlayer":
 		if e.complexity.Match.LosingPlayer == nil {
 			break
@@ -419,6 +436,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Match.TournamentID(childComplexity), true
+
+	case "Match.winnerScore":
+		if e.complexity.Match.WinnerScore == nil {
+			break
+		}
+
+		return e.complexity.Match.WinnerScore(childComplexity), true
 
 	case "Match.winningPlayer":
 		if e.complexity.Match.WinningPlayer == nil {
@@ -1072,6 +1096,9 @@ type Match {
   winningPlayer: Player!
   losingPlayer: Player!
   date: Time!
+  winnerScore: Int
+  loserScore: Int
+  isDisqualification: Boolean!
   winningPlayerStartingElo: Int!
   winningPlayerEndingElo: Int!
   losingPlayerStartingElo: Int!
@@ -1120,8 +1147,9 @@ input NewTournament {
 input NewMatchResult {
   winnerId: ID!
   loserId: ID!
-  winnerScore: Int!
-  loserScore: Int!
+  winnerScore: Int
+  loserScore: Int
+  isDisqualification: Boolean!
   date: Time!
 }
 
@@ -2379,6 +2407,105 @@ func (ec *executionContext) _Match_date(ctx context.Context, field graphql.Colle
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Match_winnerScore(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WinnerScore, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Match_loserScore(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LoserScore, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Match_isDisqualification(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsDisqualification, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Match_winningPlayerStartingElo(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
@@ -5919,7 +6046,7 @@ func (ec *executionContext) unmarshalInputNewMatchResult(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("winnerScore"))
-			it.WinnerScore, err = ec.unmarshalNInt2int(ctx, v)
+			it.WinnerScore, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5927,7 +6054,15 @@ func (ec *executionContext) unmarshalInputNewMatchResult(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loserScore"))
-			it.LoserScore, err = ec.unmarshalNInt2int(ctx, v)
+			it.LoserScore, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isDisqualification":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDisqualification"))
+			it.IsDisqualification, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6744,6 +6879,30 @@ func (ec *executionContext) _Match(ctx context.Context, sel ast.SelectionSet, ob
 		case "date":
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Match_date(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "winnerScore":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Match_winnerScore(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+		case "loserScore":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Match_loserScore(ctx, field, obj)
+			}
+
+			out.Values[i] = innerFunc(ctx)
+
+		case "isDisqualification":
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Match_isDisqualification(ctx, field, obj)
 			}
 
 			out.Values[i] = innerFunc(ctx)
