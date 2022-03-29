@@ -207,7 +207,10 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 		}
 	}
 
-	// TODO: update players
+	for _, player := range players {
+		returnedPlayer := db.UpdatePlayerRatingsAndTournamentData(player)
+		fmt.Printf("returned player %s", returnedPlayer.ID)
+	}
 	return returnedTournament, nil
 }
 
