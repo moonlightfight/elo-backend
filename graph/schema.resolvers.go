@@ -18,6 +18,9 @@ import (
 	"github.com/moonlightfight/elo-backend/helpers"
 )
 
+var mongodbUri = constants.GetEnvVar("MONGODB_URI")
+var db = database.Connect(mongodbUri)
+
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
 	lowerName := strings.ToLower(input.Username)
 
@@ -197,7 +200,8 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 				storedMatches[nextTournamentMatchInDb].WinningPlayerEndingElo, storedMatches[nextTournamentMatchInDb].LosingPlayerEndingElo = helpers.CalculateElo(players[winningPlayerIndex].Rating, players[losingPlayerIndex].Rating)
 				players[winningPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].WinningPlayerEndingElo
 				players[losingPlayerIndex].Rating = storedMatches[nextTournamentMatchInDb].LosingPlayerEndingElo
-				// TODO: Update match in DB
+				returnedMatch := db.UpdateMatch(*storedMatches[nextTournamentMatchInDb])
+				fmt.Printf("returned match %s", returnedMatch.ID)
 			}
 			nextTournamentMatchInDb++
 		}
@@ -286,5 +290,3 @@ type queryResolver struct{ *Resolver }
 //  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //    it when you're done.
 //  - You have helper methods in this file. Move them out to keep these resolver files clean.
-var mongodbUri = constants.GetEnvVar("MONGODB_URI")
-var db = database.Connect(mongodbUri)

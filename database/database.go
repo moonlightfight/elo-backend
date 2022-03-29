@@ -202,3 +202,21 @@ func (db *DB) GetMatches() []*model.Match {
 
 	return matches
 }
+
+func (db *DB) UpdateMatch(match model.Match) *model.Match {
+	id, err := primitive.ObjectIDFromHex(match.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	matchColl := db.client.Database(databaseName).Collection("Match")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	update := bson.D{{"$set", bson.D{{"winningPlayerStartingElo", match.WinningPlayerStartingElo}, {"winningPlayerEndingElo", match.WinningPlayerEndingElo}, {"losingPlayerStartingElo", match.LosingPlayerStartingElo}, {"losingPlayerEndingElo", match.LosingPlayerEndingElo}}}}
+	result := matchColl.FindOneAndUpdate(ctx, bson.M{"_id": id}, update)
+
+	var updatedMatch model.Match
+
+	result.Decode(updatedMatch)
+
+	return &updatedMatch
+}
