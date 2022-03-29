@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -26,6 +27,24 @@ func FindFirstMatchAfterTournament(matches []*model.Match, date time.Time) int {
 		}
 	}
 	return matchIndex
+}
+
+func GenerateSlug(item string) string {
+	lowerName := strings.ToLower(item)
+
+	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	re := strings.NewReplacer("_", "-", " ", "-")
+
+	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
+
+	slug := re.Replace(noSpecialChar)
+
+	return slug
 }
 
 func GetChallongeBracket(tournamentId string, subDomain interface{}) *model.APIReturnedTournament {
