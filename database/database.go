@@ -220,3 +220,21 @@ func (db *DB) UpdateMatch(match model.Match) *model.Match {
 
 	return &updatedMatch
 }
+
+func (db *DB) UpdatePlayerRatingsAndTournamentData(player model.Player) *model.Player {
+	id, err := primitive.ObjectIDFromHex(player.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	playerColl := db.client.Database(databaseName).Collection("Player")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	update := bson.D{{"$set", bson.D{{"rating", player.Rating}, {"tournaments", player.Tournaments}, {"matches", player.Matches}}}}
+	result := playerColl.FindOneAndUpdate(ctx, bson.M{"_id": id}, update)
+
+	var updatedPlayer model.Player
+
+	result.Decode(updatedPlayer)
+
+	return &updatedPlayer
+}
