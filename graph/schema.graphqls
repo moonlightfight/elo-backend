@@ -198,12 +198,7 @@ input LoginAdmin {
 }
 
 input NewTeam {
-  slug: String!
   name: String!
-  abbreviation: String!
-  logo: String
-  twitter: String
-  website: String
 }
 
 input TournamentFromApi {

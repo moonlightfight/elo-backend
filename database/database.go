@@ -238,3 +238,16 @@ func (db *DB) UpdatePlayerRatingsAndTournamentData(player model.Player) *model.P
 
 	return &updatedPlayer
 }
+
+func (db *DB) InsertTeam(team model.Team) *model.Team {
+	teamColl := db.client.Database(databaseName).Collection("Team")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := teamColl.InsertOne(ctx, team)
+	if err != nil {
+		log.Println(err)
+	}
+	id := result.InsertedID.(primitive.ObjectID).Hex()
+	team.ID = id
+	return &team
+}

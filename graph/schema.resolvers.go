@@ -6,8 +6,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
-	"regexp"
 	"strings"
 	"time"
 
@@ -19,19 +17,7 @@ import (
 )
 
 func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlayer) (*model.Player, error) {
-	lowerName := strings.ToLower(input.Username)
-
-	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	re := strings.NewReplacer("_", "-", " ", "-")
-
-	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
-
-	slug := re.Replace(noSpecialChar)
+	slug := helpers.GenerateSlug(input.Username)
 
 	player := model.Player{
 		Username: input.Username,
@@ -52,7 +38,14 @@ func (r *mutationResolver) LoginAdmin(ctx context.Context, input model.LoginAdmi
 }
 
 func (r *mutationResolver) CreateTeam(ctx context.Context, input model.NewTeam) (*model.Team, error) {
-	panic(fmt.Errorf("not implemented"))
+	slug := helpers.GenerateSlug(input.Name)
+
+	team := model.Team{
+		Name: input.Name,
+		Slug: slug
+	}
+
+	return db.InsertTeam(team), nil
 }
 
 func (r *mutationResolver) CreateTournament(ctx context.Context, input model.NewTournament) (*model.Tournament, error) {
@@ -60,19 +53,7 @@ func (r *mutationResolver) CreateTournament(ctx context.Context, input model.New
 
 	nextTournamentMatchInDb := helpers.FindFirstMatchAfterTournament(storedMatches, input.Date)
 
-	lowerName := strings.ToLower(input.Name)
-
-	specialCharRegex, err := regexp.Compile(`([^A-Za-z0-9\s_-])`)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	re := strings.NewReplacer("_", "-", " ", "-")
-
-	noSpecialChar := specialCharRegex.ReplaceAllString(lowerName, "")
-
-	slug := re.Replace(noSpecialChar)
+	slug := helpers.GenerateSlug(input.Name)
 
 	tournament := model.Tournament{
 		Name:       input.Name,

@@ -1183,12 +1183,7 @@ input LoginAdmin {
 }
 
 input NewTeam {
-  slug: String!
   name: String!
-  abbreviation: String!
-  logo: String
-  twitter: String
-  website: String
 }
 
 input TournamentFromApi {
@@ -6135,51 +6130,11 @@ func (ec *executionContext) unmarshalInputNewTeam(ctx context.Context, obj inter
 
 	for k, v := range asMap {
 		switch k {
-		case "slug":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			it.Slug, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "abbreviation":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("abbreviation"))
-			it.Abbreviation, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "logo":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logo"))
-			it.Logo, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "twitter":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("twitter"))
-			it.Twitter, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "website":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("website"))
-			it.Website, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
