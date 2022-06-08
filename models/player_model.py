@@ -1,5 +1,6 @@
 import mongoengine as me
 from .character_model import Character
+from .match_model import Match
 
 class Player(me.Document):
   slug = me.StringField(required=True, unique=True)
@@ -17,3 +18,4 @@ class Player(me.Document):
   real_name = me.StringField()
   main_character = me.ReferenceField(Character)
   sub_characters = me.ListField(me.ReferenceField(Character))
+  matches = me.ListField(me.ReferenceField(Match), required=True)
