@@ -1,4 +1,5 @@
 import mongoengine as me
+from .character_model import Character
 
 class Player(me.Document):
   slug = me.StringField(required=True, unique=True)
@@ -13,4 +14,6 @@ class Player(me.Document):
   youtube = me.URLField()
   picture = me.URLField()
   controller = me.StringField()
-  realName = me.StringField()
+  real_name = me.StringField()
+  main_character = me.ReferenceField(Character)
+  sub_characters = me.ListField(me.ReferenceField(Character))
