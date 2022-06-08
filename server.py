@@ -2,6 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_mongoengine import MongoEngine
+from .routes.admin_routes import admin_routes
 import os
 
 # Loading environmentals
@@ -26,6 +27,7 @@ db = MongoEngine()
 db.init_app(app)
 
 # register routes
+app.register_blueprint(admin_routes, url_prefix='/api/admin')
 
 # start the server
 if __name__ == '__main__':
