@@ -1,4 +1,4 @@
-import email
+from datetime import datetime
 from flask import Blueprint, jsonify, request
 import mongoengine as me
 import bcrypt
@@ -28,3 +28,22 @@ def create_admin():
     'status': 'success',
     'message': 'admin created'
   })
+
+@admin_routes.route('/login', methods=['POST'])
+def login_admin():
+  post_data = request.get_json()
+  password = post_data.get('password')
+  email = post_data.get('email')
+  admin = Admin.objects.get(email__iexact=email)
+  if bcrypt.checkpw(password.encode('utf8'), admin['password'].encode('utf8')):
+    json_admin = jsonify({
+      'id': admin['_id'],
+      'email': email,
+      'token_issued': datetime.now
+    })
+    token = jwt.encode(json_admin, secret)
+    return jsonify({
+      'status': 'success',
+      'message': "logged in",
+      'token': token.decode('utf8')
+    })
