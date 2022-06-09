@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_mongoengine import MongoEngine
 from .routes.admin_routes import admin_routes
+from .routes.tournament_routes import tournament_routes
 import os
 
 # Loading environmentals
@@ -28,6 +29,7 @@ db.init_app(app)
 
 # register routes
 app.register_blueprint(admin_routes, url_prefix='/api/admin')
+app.register_blueprint(tournament_routes, url_prefix='/api/tournament')
 
 # start the server
 if __name__ == '__main__':
