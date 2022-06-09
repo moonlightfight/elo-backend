@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, request
 import mongoengine as me
 import bcrypt
 import jwt
-import json
 from dotenv import load_dotenv
 import os
 from ..models.admin_model import Admin
