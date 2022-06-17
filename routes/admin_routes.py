@@ -5,7 +5,7 @@ import bcrypt
 import jwt
 from dotenv import load_dotenv
 import os
-from ..models.admin_model import Admin
+from models.admin_model import Admin
 
 load_dotenv()
 secret = os.getenv("SECRET")

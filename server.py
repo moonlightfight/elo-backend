@@ -2,8 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_mongoengine import MongoEngine
-from .routes.admin_routes import admin_routes
-from .routes.tournament_routes import tournament_routes
+from routes.admin_routes import admin_routes
+from routes.tournament_routes import tournament_routes
 import os
 
 # Loading environmentals

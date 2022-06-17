@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..services.tournament_services import get_challonge_bracket, get_start_bracket
+from services.tournament_services import get_challonge_bracket, get_start_bracket
 
 tournament_routes = Blueprint('tournament_routes', __name__)
 
