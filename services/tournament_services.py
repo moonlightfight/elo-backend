@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 from dotenv import load_dotenv
 import os
 import requests
@@ -154,3 +155,16 @@ def get_start_bracket(slug):
     }
 
     return bracket_info
+
+
+def calculate_elo(winner_elo, loser_elo):
+    winner_trans_elo = math.pow(winner_elo / 400, 10)
+    loser_trans_elo = math.pow(loser_elo / 400, 10)
+    winner_expected_score = winner_trans_elo / \
+        (winner_trans_elo + loser_trans_elo)
+    loser_expected_score = loser_trans_elo / \
+        (loser_trans_elo + winner_trans_elo)
+    updated_winner_elo = round(winner_elo + 32 * (1 - winner_expected_score))
+    updated_loser_elo = round(loser_elo + 32 * (0 - loser_expected_score))
+
+    return updated_winner_elo, updated_loser_elo
