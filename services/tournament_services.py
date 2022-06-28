@@ -3,6 +3,7 @@ import math
 from dotenv import load_dotenv
 import os
 import requests
+import math
 
 load_dotenv()
 
@@ -168,3 +169,15 @@ def calculate_elo(winner_elo, loser_elo):
     updated_loser_elo = round(loser_elo + 32 * (0 - loser_expected_score))
 
     return updated_winner_elo, updated_loser_elo
+
+
+def calculate_tournament_points(num_players, place):
+    score = 0
+    if place < 8:
+        score = round(num_players / place)
+    else:
+        adjusted_place = place - 1
+        score = round(num_players / adjusted_place)
+        if score == 0:
+            score += 1
+    return score
